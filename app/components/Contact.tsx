@@ -6,7 +6,7 @@ function Contact() {
         className="bg-kall-black p-5 shadow-md flex flex-col gap-2 ml-8"
       >
         <h2>Kontakt:</h2>
-        <p>mgmt@kallsup.se</p>
+        <p style={{ backgroundColor: "rgb(226, 226, 226)" }} className="text-black">mgmt@kallsup.se</p>
         <p>
           Eller skicka ett DM på{" "}
           <a

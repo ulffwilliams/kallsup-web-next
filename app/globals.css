@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+::selection {
+  background: #bdb54d;
+}
+::-moz-selection {
+  background: #bdb54d;
+}
+
 @font-face {
   font-family: "ELEGANT TYPEWRITER";
   src: url("@/public/fonts/ELEGANT_TYPEWRITER_REGULAR.TTF");
