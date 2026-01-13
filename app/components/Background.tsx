@@ -9,9 +9,6 @@ function Background() {
       w-full
       h-full
       z-[-1]
-      
-
-
       bg-[url(/images/7.4.gif)] bg-center bg-cover"
     ></div>
   );
