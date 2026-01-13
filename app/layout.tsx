@@ -25,7 +25,7 @@ export default function RootLayout({
           fetchPriority="high"
         />
       </head>
-      <body className="antialiased">
+      <body className="antialiased flex m-0 place-items-center min-w-xs">
         {children}
         <Analytics />
         <SpeedInsights />
