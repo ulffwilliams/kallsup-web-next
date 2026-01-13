@@ -16,8 +16,8 @@ async function GigList() {
       id="gigs"
       className=" flex items-center justify-center text-center"
     >
-      <div id="gigs-container" className="flex flex-col gap-2 ml-8">
-        <h2 className="">Kommande spelningar:</h2>
+      <div id="gigs-container" className="flex flex-col gap-2">
+        <h2 className="text-2xl">Kommande spelningar:</h2>
         <br />
         <ul>
           {gigs.length === 0 && (
