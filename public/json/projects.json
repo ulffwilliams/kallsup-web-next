@@ -1,0 +1,37 @@
+{
+  "projects": [
+    {
+      "artist": "Kallsup",
+      "albumName": "En sista räddning",
+        "albumArtUrl": "/images/ensistaraddning.jpg",
+      "songs": [
+        { "title": "En lögn, en sanning", "length": "04:30", "intensity": 7 },
+        { "title": "Golfströmmen", "length": "04:04", "intensity": 9 },
+        { "title": "Ditt paradis", "length": "03:18", "intensity": 8 },
+        { "title": "Blå", "length": "04:29", "intensity": 4 },
+        { "title": "Novis", "length": "04:29", "intensity": 5 },
+        { "title": "Alias", "length": "03:56", "intensity": 8 },
+        { "title": "Gnistan", "length": "05:59", "intensity": 5 },
+        { "title": "Forever", "length": "04:59", "intensity": 7 },
+        { "title": "Stilla havet", "length": "06:59", "intensity": 8 }
+      ]
+    },
+    {
+      "artist": "Kallsup",
+      "albumName": "Skiva 2",
+      "albumArtUrl": "",
+      "songs": [
+        { "title": "Smörfeber", "length": "01:50", "intensity": 3 },
+        { "title": "Kamelguden", "length": "03:35", "intensity": 5 },
+        { "title": "GBG", "length": "03:28", "intensity": 9 },
+        { "title": "Hjalmar Bergman", "length": "05:05", "intensity": 6 },
+        { "title": "Icedream", "length": "05:00", "intensity": 3 },
+        { "title": "Miramax", "length": "03:40", "intensity": 7 },
+        { "title": "Svartån2", "length": "03:18", "intensity": 8 },
+        { "title": "Fritt fall", "length": "04:34", "intensity": 6 },
+        { "title": "Bättre på håll", "length": "04:10", "intensity": 6 },
+        { "title": "Herre", "length": "05:00", "intensity": 4 }
+      ]
+    }
+  ]
+}
