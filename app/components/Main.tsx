@@ -6,9 +6,8 @@ function Main() {
         src="/images/loggavit.png"
         alt="Kallsup logo"
         className=" w-auto h-50"
-        
       />
-      <article id="link-container" className="flex gap-10">
+      <article id="link-container" className="flex gap-10 ml-2 mr-2">
         <a
           target="_blank"
           rel="noopener noreferrer"

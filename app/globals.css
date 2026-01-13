@@ -52,4 +52,13 @@ a:hover,
 #contact,
 main {
   min-height: 100vh;
+  border: 20px solid rgb(237, 240, 206);
+}
+
+@media (max-width: 640px) {
+  #gigs,
+  #contact,
+  main {
+    border: none;
+  }
 }
