@@ -3,7 +3,7 @@ import { neon } from "@neondatabase/serverless";
 async function GigList() {
   const sql = neon(`${process.env.DATABASE_URL}`);
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Jämför endast datum, inte tid
+  today.setHours(0, 0, 0, 0);
   const gigs = (await sql`SELECT * FROM events ORDER BY date ASC;`).filter(
     (gig: any) => {
       const gigDate = new Date(gig.date);

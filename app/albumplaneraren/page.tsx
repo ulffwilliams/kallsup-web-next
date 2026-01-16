@@ -1,5 +1,5 @@
-"use client";
+export default function Login()
 
-export default function Login() {
+{
   return <div>Albumplaneraren Page</div>;
 }

@@ -1,0 +1,15 @@
+"use client";
+import { signOut } from "next-auth/react";
+function Logout() {
+  return (
+    <span
+      onClick={() => {
+        signOut();
+      }}
+    >
+      Logout
+    </span>
+  );
+}
+
+export default Logout;

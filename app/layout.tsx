@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "Kallsup",
@@ -26,7 +27,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased flex m-0 place-items-center min-w-xs">
-        {children}
+        <Providers>{children}</Providers>
         <Analytics />
         <SpeedInsights />
       </body>
