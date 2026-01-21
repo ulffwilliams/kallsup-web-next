@@ -8,13 +8,13 @@ function Main() {
         className=" w-auto h-50"
       />
       <article id="link-container" className="flex gap-10 ml-2 mr-2">
-        <a
+{/*         <a
           target="_blank"
           rel="noopener noreferrer"
           href="https://shop.aloaded.com/sv-se/collections/kallsup?srsltid=AfmBOopUT8BtbM7q-Fn8tiUcALLI8-2nhuV7hTbXJRuq72aaUDisQ7_y&fbclid=PAZXh0bgNhZW0CMTEAAafguvgJmludAR5oFQpeNTpfQiUeyNuJ21KQzDwV8cgassRzSKK2gTJe_i3LFA_aem_20KlWrZOku3Cb4Ns4mMnLA"
         >
           Merch
-        </a>
+        </a> */}
         <a
           target="_blank"
           rel="noopener noreferrer"
