@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import Logout from "../_components/logout";
+
 import LoginBtn from "../_components/loginBtn";
 
 export default async function RootLayout({
@@ -20,10 +20,6 @@ export default async function RootLayout({
 
   return (
     <>
-      <nav>
-        <span>Logged in as {session.user?.name}</span>
-        <Logout />
-      </nav>
       {children}
     </>
   );

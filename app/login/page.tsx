@@ -12,7 +12,7 @@ function Login() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.replace("/albumplaneraren");
+      router.replace("/apps");
     }
   }, [session, status, router]);
 

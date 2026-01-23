@@ -7,7 +7,7 @@ function Logout() {
         signOut();
       }}
     >
-      Logout
+      Logga ut
     </span>
   );
 }

@@ -8,7 +8,7 @@ function LoginBtn() {
         router.push("/login");
       }}
     >
-      Login
+      Logga in
     </span>
   );
 }
