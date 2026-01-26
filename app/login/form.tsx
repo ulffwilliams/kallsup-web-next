@@ -16,7 +16,7 @@ export default function Form() {
 
     console.log(response);
     if (!response?.error) {
-      router.push("/albumplaneraren");
+      router.push("/apps");
       console.log("Login successful");
     }
   }
