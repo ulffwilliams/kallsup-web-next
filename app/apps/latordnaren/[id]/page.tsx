@@ -1,17 +1,7 @@
-import LoadSongs from "../LoadSongs";
+import LoadSongs from "./LoadSongs";
 
-interface SlugPageProps {
-  params: Promise<{ id: string }>;
-}
-
-const SlugPage = async ({ params }: SlugPageProps) => {
+export default async function SlugPage({ params }: any) {
   const { id } = await params;
-  return (
-    <>
-      <p>ID: {id}</p>;
-      <LoadSongs />
-    </>
-  );
-};
 
-export default SlugPage;
+  return <LoadSongs id={id} />;
+}

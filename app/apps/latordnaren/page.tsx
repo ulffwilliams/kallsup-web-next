@@ -1,4 +1,3 @@
-import React from "react";
 import Albumlist from "./Albumlist";
 
 function Latordnaren() {
