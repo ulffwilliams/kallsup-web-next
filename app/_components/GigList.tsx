@@ -1,4 +1,5 @@
 import { neon } from "@neondatabase/serverless";
+export const dynamic = "force-dynamic";
 
 async function GigList() {
   const sql = neon(`${process.env.DATABASE_URL}`);
@@ -9,7 +10,7 @@ async function GigList() {
       const gigDate = new Date(gig.date);
       gigDate.setHours(0, 0, 0, 0);
       return gigDate >= today;
-    }
+    },
   );
   return (
     <section
