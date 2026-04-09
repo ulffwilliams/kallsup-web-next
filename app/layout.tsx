@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Providers from "./providers";
+
+const neuething = localFont({
+  src: "../public/fonts/neuething.otf",
+  variable: "--font-neuething",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Kallsup",
@@ -26,7 +33,9 @@ export default function RootLayout({
           fetchPriority="high"
         />
       </head>
-      <body className="antialiased flex m-0 place-items-center min-w-xs">
+      <body
+        className={`${neuething.variable} antialiased flex m-0 place-items-center min-w-xs`}
+      >
         <Providers>{children}</Providers>
         <Analytics />
         <SpeedInsights />

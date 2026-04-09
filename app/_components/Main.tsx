@@ -2,11 +2,16 @@ import handleSmoothScroll from "./handleSmoothScroll";
 function Main() {
   return (
     <main id="main" className=" flex flex-col justify-center items-center">
-      <img
-        src="/images/loggavit.png"
-        alt="Kallsup logo"
-        className=" w-auto h-50"
-      />
+      <div id="logo-shell" aria-hidden="true">
+        <div id="logo-static-layer" />
+        <img
+          src="/images/loggavit.png"
+          alt="Kallsup logo"
+          className="w-auto h-50"
+          id="main-logo"
+        />
+        <div id="logo-glow-layer" />
+      </div>
       <article id="link-container" className="flex gap-10 ml-2 mr-2">
         {/*         <a
           target="_blank"

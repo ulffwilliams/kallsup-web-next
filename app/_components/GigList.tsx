@@ -20,7 +20,7 @@ async function GigList() {
       <div id="gigs-container" className="flex flex-col gap-2">
         <h2 className="text-2xl">Kommande spelningar:</h2>
         <br />
-        <ul>
+        <ul className="flex flex-col gap-2 m-2">
           {gigs.length === 0 && (
             <li>
               Inga spelningar inbokade för tillfället.. Det kommer! Eller så
