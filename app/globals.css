@@ -27,6 +27,16 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html,
+body {
+  min-height: 100%;
+  background: #090807;
+}
+
+html {
+  overscroll-behavior-y: none;
+}
+
 ::selection {
   background: #bdb54d;
 }
@@ -35,7 +45,7 @@
 }
 
 body {
-  background: #090807;
+  margin: 0;
 }
 
 #background {

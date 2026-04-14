@@ -140,17 +140,17 @@ function Background() {
       <div
         ref={backgroundRef}
         id="background"
-        className="fixed inset-0 -z-10 bg-[#090807]"
+        className="fixed inset-0 z-0 bg-[#090807]"
         aria-hidden="true"
       />
       <div
         id="background-image-layer"
-        className="fixed inset-0 -z-10"
+        className="fixed inset-0 z-0"
         aria-hidden="true"
       />
       <div
         id="background-noise"
-        className="fixed inset-0 -z-10 opacity-20"
+        className="fixed inset-0 z-0 opacity-20"
         aria-hidden="true"
       />
     </>

@@ -3,12 +3,20 @@ export const dynamic = "force-dynamic";
 
 async function GigList() {
   const sql = neon(`${process.env.DATABASE_URL}`);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = new Intl.DateTimeFormat("sv-CA", {
+    timeZone: "Europe/Stockholm",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
   const gigs = (await sql`SELECT * FROM events ORDER BY date ASC;`).filter(
     (gig: any) => {
-      const gigDate = new Date(gig.date);
-      gigDate.setHours(0, 0, 0, 0);
+      const gigDate = new Intl.DateTimeFormat("sv-CA", {
+        timeZone: "Europe/Stockholm",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date(gig.date));
       return gigDate >= today;
     },
   );

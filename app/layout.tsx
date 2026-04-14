@@ -33,9 +33,7 @@ export default function RootLayout({
           fetchPriority="high"
         />
       </head>
-      <body
-        className={`${neuething.variable} antialiased flex m-0 place-items-center min-w-xs`}
-      >
+      <body className={`${neuething.variable} antialiased min-w-xs`}>
         <Providers>{children}</Providers>
         <Analytics />
         <SpeedInsights />

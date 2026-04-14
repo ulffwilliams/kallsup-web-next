@@ -7,11 +7,13 @@ import Background from "./_components/Background";
 
 export default function Home() {
   return (
-      <div id="wrapper" className="w-full">
+      <div id="wrapper" className="relative isolate w-full">
         <Background />
+        <div className="relative z-10">
         <Main />
         <GigList />
         <Contact />
+        </div>
       </div>
   );
 }
