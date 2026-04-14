@@ -52,6 +52,7 @@ body {
 #background {
   will-change: background-image;
   transition: background-image 180ms linear;
+  position: absolute;
 }
 
 #background-image-layer {
