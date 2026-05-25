@@ -1,5 +1,4 @@
 import { neon } from "@neondatabase/serverless";
-export const dynamic = "force-dynamic";
 
 async function GigList() {
   const sql = neon(`${process.env.DATABASE_URL}`);

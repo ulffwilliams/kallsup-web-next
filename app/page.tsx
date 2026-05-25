@@ -3,6 +3,8 @@ import GigList from "./_components/GigList";
 import Contact from "./_components/Contact";
 import Background from "./_components/Background";
 
+export const dynamic = "force-dynamic";
+
 
 
 export default function Home() {
