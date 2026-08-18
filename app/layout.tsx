@@ -6,7 +6,18 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import Providers from "./providers";
 
 const neuething = localFont({
-  src: "../public/fonts/neuething.otf",
+  src: [
+    {
+      path: "../public/fonts/NeuethingSans-Regular.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/NeuethingSans-SemiBoldUltraExpanded.otf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   variable: "--font-neuething",
   display: "swap",
 });
@@ -23,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={neuething.variable}>
       <head>
         <link
           rel="preload"
@@ -33,7 +44,7 @@ export default function RootLayout({
           fetchPriority="high"
         />
       </head>
-      <body className={`${neuething.variable} antialiased min-w-xs`}>
+      <body className="antialiased min-w-xs">
         <Providers>{children}</Providers>
         <Analytics />
         <SpeedInsights />
