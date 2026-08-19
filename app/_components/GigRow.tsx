@@ -16,7 +16,7 @@ function GigRow({ gig, past = false }: GigRowProps) {
 
   return (
     <li
-      className={`group relative grid grid-cols-[4.5rem_1fr] items-center gap-x-6 gap-y-1 border-b border-kall-800 py-5 transition-colors hover:bg-white/[0.02] md:grid-cols-[7rem_11rem_1fr_auto] md:gap-x-8 ${
+      className={`pl-2 group relative grid grid-cols-[4.5rem_1fr] items-center gap-x-6 gap-y-1 border-b border-kall-800 py-5 transition-colors hover:bg-white/[0.02] md:grid-cols-[7rem_11rem_1fr_auto] md:gap-x-8 ${
         past ? "opacity-60" : ""
       }`}
     >
