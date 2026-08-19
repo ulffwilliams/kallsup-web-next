@@ -47,7 +47,7 @@ const typewriter = localFont({
 });
 
 const description =
-  "Kallsup är ett indie-rock/shoegaze-band från Örebro. Det värsta på en bra dag.";
+  "Kallsup är ett shoegaze/alternativt rockband från Örebro. 'Alldeles för nära' ute 2:a Oktober.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://kallsup.se"),
