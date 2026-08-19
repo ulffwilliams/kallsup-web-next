@@ -37,7 +37,10 @@ function GigRow({ gig, past = false }: GigRowProps) {
         {gig.location}
       </p>
 
-      <p className="type-meta col-start-2 md:col-start-3">
+      {/* Venue and ticket CTA run in Neuething rather than the typewriter face:
+          they sit right next to the city, which inherits the sans by default,
+          and the mixed pairing read as a mistake. */}
+      <p className="col-start-2 text-sm tracking-[0.02em] text-kall-300 md:col-start-3">
         {gig.venue}
         {gig.note && (
           <span className="text-kall-500"> — {gig.note}</span>
@@ -51,7 +54,7 @@ function GigRow({ gig, past = false }: GigRowProps) {
               href={gig.ticketlink}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-solid"
+              className="btn btn-solid font-sans tracking-[0.1em]"
             >
               Biljetter
             </a>

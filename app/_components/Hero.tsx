@@ -39,7 +39,9 @@ function Hero({ nextGig }: HeroProps) {
       <div className="shell">
         <h1 className="type-mega text-kall-cream/80">
           Alldeles för
-          <span className="block pl-6 text-kall-gold italic sm:pl-12 md:pl-20">nära</span>
+          <span className="block pl-6 text-kall-gold italic sm:pl-12 md:pl-20">
+            nära
+          </span>
         </h1>
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
@@ -51,19 +53,9 @@ function Hero({ nextGig }: HeroProps) {
           >
             Förhandsbeställ skivan
           </a>
-
-          {nextGig && next ? (
-            <a href="#live" className="btn">
-              Nästa spelning
-              <span className="text-kall-gold">
-                {next.numeric} {nextGig.location}
-              </span>
-            </a>
-          ) : (
-            <a href="#live" className="btn">
-              Live
-            </a>
-          )}
+          <a href="#live" className="btn">
+            Live
+          </a>
         </div>
       </div>
 

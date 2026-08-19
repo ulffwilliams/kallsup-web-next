@@ -15,11 +15,6 @@ function GigList({ upcoming, past }: GigListProps) {
       <div className="shell">
         <SectionHeader
           title="Live"
-          aside={
-            upcoming.length > 0
-              ? `${String(upcoming.length).padStart(2, "0")} datum`
-              : undefined
-          }
         />
 
         {upcoming.length === 0 ? (
