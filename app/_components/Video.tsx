@@ -15,7 +15,7 @@ function Video() {
   return (
     <section id="video" className="section-y scroll-mt-24">
       <div className="shell">
-        <SectionHeader title="Kino" aside="Kino" />
+        <SectionHeader title="Kino"/>
 
         <Reveal>
           <div className="relative aspect-video w-full overflow-hidden">

@@ -8,6 +8,7 @@ production deploy are never touched.
 ```
 git main          ──►  Vercel Production  ──►  Neon `production`   (3 past gigs)
 git tour-preview  ──►  Vercel Preview     ──►  Neon `tour-preview` (+ 6 new)
+                       via a branch-scoped DATABASE_URL
 ```
 
 The wiring is one Vercel environment variable scoped to one git branch.
@@ -23,7 +24,9 @@ The wiring is one Vercel environment variable scoped to one git branch.
   `Fritt inträde`, else → `Biljetter snart`. Previously a missing ticket link
   asserted free entry, which would have been wrong for all six tour rows.
 - `scripts/seed-tour-preview.mjs` holds the six dates and refuses to run
-  against production (see Safety below).
+  against production (see Safety below). **Already run** against Neon branch
+  `tour-preview` (endpoint `ep-purple-forest-agvtr1he`): 6 upcoming rows there,
+  0 upcoming on production.
 
 ## Remaining steps
 
@@ -63,7 +66,7 @@ Vercel builds a preview deploy automatically. On this first build it still
 reads the **production** database, so the new dates will not appear yet —
 step 4 is what redirects it.
 
-### 4. Point that branch's `DATABASE_URL` at the Neon branch
+### 4. Scope a second `DATABASE_URL` to the branch
 
 Vercel → project `kallsup-web-next` → Settings → Environment Variables → add:
 
@@ -72,6 +75,10 @@ Vercel → project `kallsup-web-next` → Settings → Environment Variables →
 - Environment: **Preview** only
 - Git branch: **`tour-preview`** ← the important field. Without it the override
   applies to *every* preview branch.
+
+Vercel permits the repeated key because the scopes differ, and the
+branch-scoped value wins for builds of that branch. Leave the existing
+unscoped `DATABASE_URL` alone — production keeps reading it.
 
 Then redeploy the branch so the new value is picked up — env vars are read at
 build/runtime of a given deployment, not applied retroactively.

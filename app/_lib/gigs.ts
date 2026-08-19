@@ -30,6 +30,12 @@ const SELECT_GIG = `
   freeentry
 `;
 
+/*
+ * Preview deploys read a Neon *branch* so unannounced shows never reach the
+ * live site. The wiring is entirely in Vercel: a second DATABASE_URL scoped to
+ * one Preview git branch, which takes precedence over the unscoped value for
+ * builds of that branch. Nothing to special-case here.
+ */
 function db() {
   return neon(`${process.env.DATABASE_URL}`);
 }
