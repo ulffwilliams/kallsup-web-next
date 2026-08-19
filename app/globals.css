@@ -237,6 +237,90 @@ h6 {
   transform: translateY(-2px);
 }
 
+/* Cover-art hover zoom, shared by Merch and Releases.
+   `translateZ(0)` + `will-change` give the image its own compositing layer, so
+   the scale is a GPU transform of a cached bitmap rather than a re-raster every
+   frame — without it a 3% scale reads as visible stepping, and ScrollSmoother's
+   wrapper transform makes the nested rasterisation worse. The long ease-out
+   curve does the rest. */
+@layer components {
+  /* Denser dot field than #background-noise (7-13px tiles against its 120-190px)
+     so it reads as static rather than grain. Screen blend lifts it out of the
+     photo's shadows; it sits *under* the hero's gradient ramp, so it fades out
+     over the bottom of the frame where the type sits and never fights it.
+     Inset is negative so the jitter cannot expose an edge. */
+  .hero-static {
+    position: absolute;
+    inset: -3%;
+    pointer-events: none;
+    opacity: 0.14;
+    mix-blend-mode: screen;
+    background-image:
+      radial-gradient(
+        circle at 15% 25%,
+        rgba(255, 255, 255, 0.55) 0 0.5px,
+        transparent 0.8px
+      ),
+      radial-gradient(
+        circle at 65% 15%,
+        rgba(255, 231, 184, 0.45) 0 0.5px,
+        transparent 0.8px
+      ),
+      radial-gradient(
+        circle at 35% 70%,
+        rgba(255, 208, 154, 0.4) 0 0.5px,
+        transparent 0.8px
+      ),
+      radial-gradient(
+        circle at 85% 60%,
+        rgba(255, 255, 255, 0.35) 0 0.4px,
+        transparent 0.7px
+      );
+    background-size:
+      9px 9px,
+      13px 13px,
+      11px 11px,
+      7px 7px;
+    animation: hero-static 110ms steps(3) infinite;
+    will-change: transform;
+  }
+
+  /* Deliberately unanimated: scanlines that jitter with the static shimmer and
+     turn into moire. Holding them still is what makes them read as the screen
+     rather than the signal. */
+  .hero-scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.45;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(9, 8, 7, 0.35) 0 1px,
+      transparent 1px 3px
+    );
+  }
+
+  .hero-pulse {
+    animation: hero-pulse 16s ease-in-out infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+}
+
+@layer components {
+  .hover-zoom {
+    transform: translateZ(0);
+    transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .group:hover .hover-zoom,
+  .group:focus-within .hover-zoom {
+    transform: translateZ(0) scale(1.06);
+  }
+}
+
 /* Back-catalogue covers sit behind the featured record: warm, desaturated and
    dimmed toward the ground. Hover (or keyboard focus) restores the artwork. */
 @layer components {
@@ -570,6 +654,43 @@ h6 {
   animation: logo-pulse 6s ease-in-out infinite;
 }
 
+/* Hero photo breathing. Transform only — the still filter and opacity on the
+   element are left alone, since animating `filter` re-runs the whole pipeline
+   per frame while a scale is a compositor job on the promoted layer. Floor is
+   1.02 rather than 1 so no subpixel seam can open at the edges of the fill. */
+@keyframes hero-pulse {
+  0%,
+  100% {
+    transform: translateZ(0) scale(1.02);
+  }
+  50% {
+    transform: translateZ(0) scale(1.06);
+  }
+}
+
+/* Faster and wider than noise-drift: this one should read as signal noise on
+   the photo rather than film grain over the page. */
+@keyframes hero-static {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  20% {
+    transform: translate3d(-1.5%, 1%, 0);
+  }
+  40% {
+    transform: translate3d(1%, -1.5%, 0);
+  }
+  60% {
+    transform: translate3d(-1%, -1%, 0);
+  }
+  80% {
+    transform: translate3d(1.5%, 0.5%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @keyframes noise-drift {
   0% {
     transform: translate3d(0, 0, 0);
@@ -669,6 +790,8 @@ h6 {
   }
 
   #background-noise,
+  .hero-pulse,
+  .hero-static,
   .grain-overlay,
   #logo-static-layer,
   .logo-static-layer,
@@ -684,5 +807,12 @@ h6 {
     transform: none;
     transition-duration: 200ms;
     transition-delay: 0ms;
+  }
+
+  .hover-zoom,
+  .group:hover .hover-zoom,
+  .group:focus-within .hover-zoom {
+    transform: none;
+    transition: none;
   }
 }

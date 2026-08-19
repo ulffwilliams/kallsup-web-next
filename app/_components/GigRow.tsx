@@ -26,25 +26,20 @@ function GigRow({ gig, past = false }: GigRowProps) {
       />
 
       <div className="row-span-2 md:row-span-1">
-        <span className="type-label block">{date.month}</span>
+        <span className="type-label block text-kall-cream">{date.month}</span>
         <span className="font-display text-3xl leading-none font-bold tracking-tight text-kall-cream italic">
           {date.day}
         </span>
-        <span className="type-label block opacity-60">{date.year}</span>
+        <span className="type-label block text-kall-cream">{date.year}</span>
       </div>
 
       <p className="text-sm tracking-[0.04em] text-kall-cream uppercase">
         {gig.location}
       </p>
 
-      {/* Venue and ticket CTA run in Neuething rather than the typewriter face:
-          they sit right next to the city, which inherits the sans by default,
-          and the mixed pairing read as a mistake. */}
       <p className="col-start-2 text-sm tracking-[0.02em] text-kall-300 md:col-start-3">
         {gig.venue}
-        {gig.note && (
-          <span className="text-kall-500"> — {gig.note}</span>
-        )}
+        {gig.note && <span className="text-kall-cream"> — {gig.note}</span>}
       </p>
 
       {!past && (
@@ -54,14 +49,14 @@ function GigRow({ gig, past = false }: GigRowProps) {
               href={gig.ticketlink}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-solid font-sans tracking-[0.1em]"
+              className="btn btn-solid font-sans tracking-[0.1em] text-kall-cream"
             >
               Biljetter
             </a>
           ) : gig.freeentry ? (
-            <span className="type-label text-kall-gold">Fritt inträde</span>
+            <span className="type-label">Fritt inträde</span>
           ) : (
-            <span className="type-label text-kall-500">Biljetter snart</span>
+            <span className="type-label ">Biljetter snart</span>
           )}
         </div>
       )}

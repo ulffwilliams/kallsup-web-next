@@ -34,9 +34,12 @@ function Merch() {
                         alt={`${item.name} — ${item.variant ?? "merch"}`}
                         fill
                         sizes={IMAGE_SIZES}
-                        className={`object-cover transition-[transform,opacity] duration-500 group-hover:scale-[1.03] ${
-                          item.imageAlt ? "group-hover:opacity-0" : ""
-                        }`}
+                        /* Stays fully opaque. Cross-dissolving both shots at
+                           once dips through ~50/50, letting the tile background
+                           show as a grey flash mid-transition; fading only the
+                           top shot keeps something solid underneath the whole
+                           way. */
+                        className="hover-zoom object-cover"
                       />
                       {item.imageAlt && (
                         <Image
@@ -45,7 +48,7 @@ function Merch() {
                           aria-hidden="true"
                           fill
                           sizes={IMAGE_SIZES}
-                          className="object-cover opacity-0 transition-[transform,opacity] duration-500 group-hover:scale-[1.03] group-hover:opacity-100"
+                          className="hover-zoom object-cover opacity-0 transition-opacity duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none"
                         />
                       )}
                       <div className="grain-overlay" aria-hidden="true" />

@@ -100,7 +100,7 @@ function Releases() {
                         alt={`${release.title} — omslag`}
                         fill
                         sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 22vw"
-                        className="cover-muted object-cover transition-[transform,filter] duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03] motion-reduce:transition-none"
+                        className="cover-muted hover-zoom object-cover transition-[filter] duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
                       />
                       <div className="grain-overlay" aria-hidden="true" />
                     </div>
