@@ -50,6 +50,3 @@ export const socials = [
 
 /** Looked up by label so the socials array stays free to reorder. */
 export const instagram = socials.find((s) => s.label === "Instagram")!;
-
-export const bandcampAlbum =
-  "https://varorecords.bandcamp.com/album/en-sista-r-ddning";

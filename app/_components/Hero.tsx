@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { formatGigDate, type Gig } from "../_lib/gigs";
-import { site, bandcampAlbum } from "../_lib/site";
+import { site } from "../_lib/site";
 
 type HeroProps = {
   nextGig?: Gig;
@@ -50,7 +50,7 @@ function Hero({ nextGig }: HeroProps) {
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
           <a
-            href={bandcampAlbum}
+            href="https://varorecords.bandcamp.com/album/alldeles-f-r-n-ra"
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-solid"

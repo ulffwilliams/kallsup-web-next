@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { nav, socials, site, bandcampAlbum } from "../_lib/site";
+import { nav, socials, site} from "../_lib/site";
 
 /** Closing slab: mega wordmark with the full glow treatment, then columns. */
 function SiteFooter() {

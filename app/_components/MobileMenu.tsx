@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { nav, socials, bandcampAlbum } from "../_lib/site";
+import { nav, socials} from "../_lib/site";
 
 type MobileMenuProps = {
   open: boolean;
@@ -59,7 +59,7 @@ function MobileMenu({ open, onClose }: MobileMenuProps) {
 
       <div className="flex flex-col gap-6">
         <a
-          href={bandcampAlbum}
+          href="https://varorecords.bandcamp.com/album/alldeles-f-r-n-ra"
           target="_blank"
           rel="noopener noreferrer"
           className="btn btn-solid justify-center"
