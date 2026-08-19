@@ -17,18 +17,6 @@ function Contact() {
             >
               {site.email}
             </a>
-            <p className="type-meta mt-8 max-w-md text-kall-500">
-              Eller skicka ett DM på{" "}
-              <a
-                className="text-kall-cream"
-                target="_blank"
-                rel="noopener noreferrer"
-                href={instagram.href}
-              >
-                Instagram
-              </a>
-              .
-            </p>
           </Reveal>
         </div>
       </div>
