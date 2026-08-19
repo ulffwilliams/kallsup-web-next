@@ -39,15 +39,27 @@ const colorStops = [
   },
 ];
 
+/**
+ * Scroll-driven ground for the whole page.
+ *
+ * Writes four interpolated colours plus the raw scroll progress as custom
+ * properties on <html>; the gradient itself lives in globals.css under
+ * `#background`, so nothing rebuilds a multi-kilobyte gradient string per
+ * frame. --scroll-progress is also readable by any other component that wants
+ * to react to page depth.
+ */
 function Background() {
   const backgroundRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const background = backgroundRef.current;
-
-    if (!background) {
+    if (!backgroundRef.current) {
       return;
     }
+
+    const root = document.documentElement;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     let animationFrame = 0;
     let currentProgress = 0;
@@ -58,51 +70,26 @@ function Background() {
       const startIndex = Math.floor(scaled);
       const endIndex = Math.min(startIndex + 1, colorStops.length - 1);
       const mixAmount = scaled - startIndex;
+      const from = colorStops[startIndex];
+      const to = colorStops[endIndex];
 
-      const top = mixColor(
-        colorStops[startIndex].top,
-        colorStops[endIndex].top,
-        mixAmount,
+      root.style.setProperty("--scroll-progress", progress.toFixed(4));
+      root.style.setProperty(
+        "--grad-top",
+        toRgb(mixColor(from.top, to.top, mixAmount)),
       );
-      const middle = mixColor(
-        colorStops[startIndex].middle,
-        colorStops[endIndex].middle,
-        mixAmount,
+      root.style.setProperty(
+        "--grad-mid",
+        toRgb(mixColor(from.middle, to.middle, mixAmount)),
       );
-      const glow = mixColor(
-        colorStops[startIndex].glow,
-        colorStops[endIndex].glow,
-        mixAmount,
+      root.style.setProperty(
+        "--grad-glow",
+        toRgb(mixColor(from.glow, to.glow, mixAmount)),
       );
-      const base = mixColor(
-        colorStops[startIndex].base,
-        colorStops[endIndex].base,
-        mixAmount,
+      root.style.setProperty(
+        "--grad-base",
+        toRgb(mixColor(from.base, to.base, mixAmount)),
       );
-
-      const glowX = 12 + progress * 54;
-      const glowY = 15 + progress * 46;
-      const accentX = 82 - progress * 31;
-      const accentY = 10 + progress * 54;
-      const emberX = 34 + progress * 18;
-      const emberY = 78 - progress * 24;
-
-      background.style.backgroundImage = `
-        radial-gradient(circle at ${glowX}% ${glowY}%, ${toRgb(glow)} 0%, rgba(198, 157, 79, 0.18) 18%, transparent 42%),
-        radial-gradient(circle at ${accentX}% ${accentY}%, rgba(172, 93, 74, 0.24) 0%, transparent 34%),
-        radial-gradient(circle at ${emberX}% ${emberY}%, rgba(124, 116, 56, 0.16) 0%, transparent 30%),
-        linear-gradient(180deg, ${toRgb(top)} 0%, ${toRgb(middle)} 48%, ${toRgb(base)} 100%)
-      `;
-    };
-
-    const updateTarget = () => {
-      const scrollRange = document.documentElement.scrollHeight - window.innerHeight;
-      targetProgress =
-        scrollRange > 0 ? Math.min(window.scrollY / scrollRange, 1) : 0;
-
-      if (!animationFrame) {
-        animationFrame = window.requestAnimationFrame(animate);
-      }
     };
 
     const animate = () => {
@@ -117,6 +104,23 @@ function Background() {
       currentProgress = targetProgress;
       applyBackground(currentProgress);
       animationFrame = 0;
+    };
+
+    const updateTarget = () => {
+      const scrollRange =
+        document.documentElement.scrollHeight - window.innerHeight;
+      targetProgress =
+        scrollRange > 0 ? Math.min(window.scrollY / scrollRange, 1) : 0;
+
+      if (reduceMotion) {
+        currentProgress = targetProgress;
+        applyBackground(currentProgress);
+        return;
+      }
+
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(animate);
+      }
     };
 
     applyBackground(0);
@@ -140,7 +144,7 @@ function Background() {
       <div
         ref={backgroundRef}
         id="background"
-        className="fixed inset-0 z-0 bg-[#090807]"
+        className="fixed inset-0 z-0"
         aria-hidden="true"
       />
       <div

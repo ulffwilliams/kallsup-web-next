@@ -1,57 +1,88 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   Design tokens. Colors are the existing Kallsup profile, only named:
+   the near-black ground, the warm amber/ember/olive accents pulled from the
+   scroll gradient, and a warm grey ramp for hairlines and micro-labels.
+   --------------------------------------------------------------------------- */
 @theme {
+  --color-kall-void: #090807;
   --color-kall-black: oklch(0.2333 0.0148 42.35 / 91.89%);
+  --color-kall-900: #12100e;
+  --color-kall-800: #1a1512;
+  --color-kall-700: #2a221c;
+  --color-kall-600: #4a3f34;
+  --color-kall-500: #8a7f6d;
+  --color-kall-300: #c9bfa9;
+
+  --color-kall-gold: #bdb54d;
+  --color-kall-amber: #c69d4f;
+  --color-kall-ember: #a45949;
+  --color-kall-cream: #edf0ce;
+
   --font-sans:
     var(--font-neuething), system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
     "Helvetica Neue", sans-serif;
+  --font-display: var(--font-neuething), sans-serif;
+  --font-mono: var(--font-typewriter), ui-monospace, monospace;
+
+  /* Floor is deliberately low: the display face is UltraExpanded, so uppercase
+     "ALLDELES" alone measures 7.55em after tracking — at 320px that caps the
+     size near 37px. The 11.5vw slope tracks that limit up through the range. */
+  --text-mega: clamp(2.25rem, 11.5vw, 9rem);
+  --text-huge: clamp(2.25rem, 5vw, 3.5rem);
+  --text-label: 0.6875rem;
+
+  --leading-mega: 1.2;
+  --leading-huge: 1.15;
+
+  --section-y: clamp(5rem, 10vw, 8.5rem);
 }
 
 :root {
-  font-family:
-    var(--font-neuething, system-ui),
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    "Open Sans",
-    "Helvetica Neue",
-    sans-serif;
-  color-scheme: light dark;
+  font-family: var(--font-sans);
+  color-scheme: dark;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.87);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Written by Background.tsx on scroll. Declared here so the gradient below
+     renders correctly before hydration. */
+  --scroll-progress: 0;
+  --grad-top: rgb(30 25 14);
+  --grad-mid: rgb(88 79 31);
+  --grad-glow: rgb(198 157 79);
+  --grad-base: rgb(7 6 5);
 }
 
 html,
 body {
   min-height: 100%;
-  background: #090807;
+  background: var(--color-kall-void);
   overflow-x: hidden;
 }
 
 html {
   overscroll-behavior-y: none;
-}
-
-::selection {
-  background: #bdb54d;
-}
-::-moz-selection {
-  background: #bdb54d;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   font-weight: 400;
+}
+
+::selection {
+  background: var(--color-kall-gold);
+  color: var(--color-kall-void);
+}
+::-moz-selection {
+  background: var(--color-kall-gold);
+  color: var(--color-kall-void);
 }
 
 /* Tailwind preflight resets headings to `font-weight: inherit`; restore bold so
@@ -65,10 +96,274 @@ h6 {
   font-weight: 700;
 }
 
+/* ---------------------------------------------------------------------------
+   Typographic roles
+   Display  = Neuething UltraExpanded 700. Uppercase, huge, tight tracking.
+   Body     = Neuething Regular 400.
+   Label    = Elegant Typewriter. Meta, dates, catalogue numbers.
+   --------------------------------------------------------------------------- */
+@layer components {
+  .type-mega {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-mega);
+    line-height: var(--leading-mega);
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+  }
+
+  .type-huge {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-huge);
+    line-height: var(--leading-huge);
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  .type-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-kall-500);
+    line-height: 1.4;
+  }
+
+  .type-meta {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    color: var(--color-kall-300);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Links, buttons, hairlines
+   Replaces the old blanket `a:hover { filter: invert(...) rotate(1deg) }`,
+   which rotated every link on the page including body copy.
+   --------------------------------------------------------------------------- */
+a {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -0.15em;
+  width: 100%;
+  height: 1px;
+  background: var(--color-kall-gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.link-underline:hover::after,
+.link-underline:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.link-nav {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-kall-300);
+  transition: color 160ms ease;
+}
+.link-nav:hover,
+.link-nav[data-active="true"] {
+  color: var(--color-kall-cream);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--color-kall-600);
+  color: var(--color-kall-cream);
+  background: transparent;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
+  white-space: nowrap;
+}
+.btn:hover {
+  background: var(--color-kall-cream);
+  border-color: var(--color-kall-cream);
+  color: var(--color-kall-void);
+}
+
+.btn-solid {
+  background: var(--color-kall-cream);
+  border-color: var(--color-kall-cream);
+  color: var(--color-kall-void);
+}
+.btn-solid:hover {
+  background: var(--color-kall-gold);
+  border-color: var(--color-kall-gold);
+}
+
+.social-img {
+  cursor: pointer;
+  opacity: 0.72;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+.social-img:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+/* Back-catalogue covers sit behind the featured record: warm, desaturated and
+   dimmed toward the ground. Hover (or keyboard focus) restores the artwork. */
+@layer components {
+  .cover-muted {
+    filter: grayscale(0.65) sepia(0.3) brightness(0.7) contrast(1.06);
+  }
+
+  .group:hover .cover-muted,
+  .group:focus-within .cover-muted {
+    filter: none;
+  }
+}
+
+.rule {
+  border: 0;
+  border-top: 1px solid var(--color-kall-700);
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-kall-gold);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-kall-cream);
+  color: var(--color-kall-void);
+}
+
+/* ---------------------------------------------------------------------------
+   Layout primitives
+   --------------------------------------------------------------------------- */
+.shell {
+  width: 100%;
+  max-width: 84rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 4rem);
+}
+
+.section-y {
+  padding-block: var(--section-y);
+}
+
+/* ---------------------------------------------------------------------------
+   Scroll reveal — driven by Reveal.tsx / IntersectionObserver
+   --------------------------------------------------------------------------- */
+[data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity 620ms cubic-bezier(0.2, 0.6, 0.2, 1),
+    transform 620ms cubic-bezier(0.2, 0.6, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+[data-reveal="in"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Row-level stagger inside a single revealed list — avoids wrapping every <li>
+   in its own observer (and its own invalid <ul>). */
+.gig-stagger > li {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  transition:
+    opacity 520ms cubic-bezier(0.2, 0.6, 0.2, 1),
+    transform 520ms cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+[data-reveal="in"] .gig-stagger > li,
+.gig-stagger[data-reveal="in"] > li {
+  opacity: 1;
+  transform: none;
+}
+.gig-stagger > li:nth-child(1) {
+  transition-delay: 0ms;
+}
+.gig-stagger > li:nth-child(2) {
+  transition-delay: 60ms;
+}
+.gig-stagger > li:nth-child(3) {
+  transition-delay: 120ms;
+}
+.gig-stagger > li:nth-child(4) {
+  transition-delay: 180ms;
+}
+.gig-stagger > li:nth-child(5) {
+  transition-delay: 240ms;
+}
+.gig-stagger > li:nth-child(n + 6) {
+  transition-delay: 300ms;
+}
+
+/* ---------------------------------------------------------------------------
+   Background stack
+   Background.tsx now only writes --grad-* / --scroll-progress; the gradient
+   itself is declared once here instead of being rebuilt as a string per frame.
+   --------------------------------------------------------------------------- */
 #background {
   will-change: background-image;
-  transition: background-image 180ms linear;
-  position: absolute;
+  background-image:
+    radial-gradient(
+      circle at calc(12% + var(--scroll-progress) * 54%)
+        calc(15% + var(--scroll-progress) * 46%),
+      var(--grad-glow) 0%,
+      rgba(198, 157, 79, 0.18) 18%,
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at calc(82% - var(--scroll-progress) * 31%)
+        calc(10% + var(--scroll-progress) * 54%),
+      rgba(172, 93, 74, 0.24) 0%,
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at calc(34% + var(--scroll-progress) * 18%)
+        calc(78% - var(--scroll-progress) * 24%),
+      rgba(124, 116, 56, 0.16) 0%,
+      transparent 30%
+    ),
+    linear-gradient(
+      180deg,
+      var(--grad-top) 0%,
+      var(--grad-mid) 48%,
+      var(--grad-base) 100%
+    );
 }
 
 #background-image-layer {
@@ -115,16 +410,90 @@ h6 {
   animation: noise-drift 220ms steps(2) infinite;
 }
 
-#logo-shell {
+/* Seam between two full-bleed slabs. Warm bloom spilling out of the imagery
+   above, plus a hairline that fades to nothing at both edges, so sections merge
+   instead of butting against each other. Decorative only — no content. */
+@layer components {
+  .section-seam {
+    position: relative;
+    height: clamp(4.5rem, 9vw, 8rem);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .section-seam::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        ellipse 65% 130% at 50% 0%,
+        color-mix(in oklab, var(--color-kall-ember) 18%, transparent) 0%,
+        transparent 72%
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--color-kall-amber) 10%, transparent) 0%,
+        transparent 80%
+      );
+  }
+
+  .section-seam::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--color-kall-700) 20%,
+      color-mix(in oklab, var(--color-kall-amber) 60%, transparent) 50%,
+      var(--color-kall-700) 80%,
+      transparent 100%
+    );
+  }
+}
+
+/* Reusable grain overlay for full-bleed imagery (hero, media, gallery). */
+.grain-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  opacity: 0.35;
+  background-image:
+    radial-gradient(
+      circle at 25% 25%,
+      rgba(255, 244, 214, 0.2) 0 0.7px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 75% 65%,
+      rgba(255, 229, 168, 0.16) 0 0.8px,
+      transparent 1.1px
+    );
+  background-size:
+    110px 110px,
+    160px 160px;
+  animation: noise-drift 220ms steps(2) infinite;
+}
+
+/* ---------------------------------------------------------------------------
+   Logo treatment — flicker / static / glow. Amplitude is driven by
+   --logo-scale so the header mark can run a calmer version of the same effect.
+   --------------------------------------------------------------------------- */
+#logo-shell,
+.logo-shell {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 2.5rem;
   isolation: isolate;
 }
 
-#main-logo {
+#main-logo,
+.logo-mark {
   position: relative;
   z-index: 2;
   filter: drop-shadow(0 0 18px rgba(204, 168, 86, 0.12))
@@ -135,13 +504,16 @@ h6 {
 }
 
 #logo-static-layer,
-#logo-glow-layer {
+#logo-glow-layer,
+.logo-static-layer,
+.logo-glow-layer {
   position: absolute;
   inset: -4%;
   pointer-events: none;
 }
 
-#logo-static-layer {
+#logo-static-layer,
+.logo-static-layer {
   z-index: 3;
   opacity: 0.18;
   mix-blend-mode: screen;
@@ -176,7 +548,8 @@ h6 {
   animation: logo-static 200ms steps(2) infinite;
 }
 
-#logo-glow-layer {
+#logo-glow-layer,
+.logo-glow-layer {
   z-index: 1;
   opacity: 0.42;
   background: radial-gradient(
@@ -279,28 +652,30 @@ h6 {
   }
 }
 
-a,
-.social-img {
-  cursor: pointer;
-  transition: 0.1s ease-in-out;
-}
-a:hover,
-.social-img:hover {
-  filter: invert(84%) sepia(10%) saturate(868%) hue-rotate(167deg)
-    brightness(93%) contrast(94%) blur(0.6px);
-  transform: scale(1.05) rotate(1deg);
-}
+/* ---------------------------------------------------------------------------
+   Reduced motion — freeze grain, flicker and drift; keep reveals as
+   plain fades so content still appears.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 
-#gigs,
-#contact,
-#main {
-  min-height: 100vh;
-}
+  #background-noise,
+  .grain-overlay,
+  #logo-static-layer,
+  .logo-static-layer,
+  #logo-glow-layer,
+  .logo-glow-layer,
+  #main-logo,
+  .logo-mark {
+    animation: none !important;
+  }
 
-@media (max-width: 640px) {
-  #gigs,
-  #contact,
-  main {
-    border: none;
+  [data-reveal],
+  .gig-stagger > li {
+    transform: none;
+    transition-duration: 200ms;
+    transition-delay: 0ms;
   }
 }

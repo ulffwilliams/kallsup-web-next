@@ -42,3 +42,7 @@ next-env.d.ts
 
 .vercel
 .env*.local
+
+# image masters — too large to deploy; derivatives in public/images are generated
+# by scripts/derive-images.mjs and are committed instead
+/assets-src

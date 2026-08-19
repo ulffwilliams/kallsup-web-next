@@ -8,12 +8,12 @@ import Providers from "./providers";
 const neuething = localFont({
   src: [
     {
-      path: "../public/fonts/NeuethingSans-Regular.otf",
+      path: "../public/fonts/neuething-sans-regular.otf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../public/fonts/NeuethingSans-SemiBoldUltraExpanded.otf",
+      path: "../public/fonts/neuething-sans-ultraexpanded.otf",
       weight: "700",
       style: "normal",
     },
@@ -22,10 +22,61 @@ const neuething = localFont({
   display: "swap",
 });
 
+/* Micro-label / meta typeface. Carries dates, catalogue numbers and section
+   labels so the UltraExpanded display face is never asked to set small text. */
+const typewriter = localFont({
+  src: [
+    {
+      path: "../public/fonts/elegant-typewriter-light.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/elegant-typewriter-regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/elegant-typewriter-bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-typewriter",
+  display: "swap",
+});
+
+const description =
+  "Kallsup är ett indie-rock/shoegaze-band från Örebro. Det värsta på en bra dag.";
+
 export const metadata: Metadata = {
-  title: "Kallsup",
-  description:
-    "Kallsup is a indie-rock/shoegaze band from Örebro, Sweden. Det värsta på en bra dag.",
+  metadataBase: new URL("https://kallsup.se"),
+  title: {
+    default: "Kallsup",
+    template: "%s — Kallsup",
+  },
+  description,
+  openGraph: {
+    title: "Kallsup",
+    description,
+    url: "https://kallsup.se",
+    siteName: "Kallsup",
+    locale: "sv_SE",
+    type: "website",
+    images: [
+      {
+        url: "/images/press-horizontal.jpg",
+        width: 2560,
+        height: 1707,
+        alt: "Kallsup — pressbild",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kallsup",
+    description,
+  },
 };
 
 export default function RootLayout({
@@ -34,7 +85,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={neuething.variable}>
+    <html lang="sv" className={`${neuething.variable} ${typewriter.variable}`}>
       <head>
         <link
           rel="preload"
@@ -45,6 +96,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased min-w-xs">
+        <a href="#main" className="skip-link">
+          Hoppa till innehåll
+        </a>
         <Providers>{children}</Providers>
         <Analytics />
         <SpeedInsights />
