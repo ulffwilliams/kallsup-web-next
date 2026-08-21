@@ -33,7 +33,7 @@ function GigRow({ gig, past = false }: GigRowProps) {
         <span className="type-label block text-kall-cream">{date.year}</span>
       </div>
 
-      <p className="text-sm tracking-[0.04em] text-kall-cream uppercase">
+      <p className="text-sm tracking-[0.04em] text-kall-cream">
         {gig.location}
       </p>
 

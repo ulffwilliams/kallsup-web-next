@@ -55,7 +55,7 @@ function Merch() {
                     </div>
                   ) : (
                     <div className="relative flex aspect-square w-full items-center justify-center border border-dashed border-kall-700 bg-kall-900/40">
-                      <span className="type-label">{item.name}</span>
+                      <span className="type-label uppercase">{item.name}</span>
                       <div className="grain-overlay" aria-hidden="true" />
                     </div>
                   )}

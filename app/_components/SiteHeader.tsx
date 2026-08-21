@@ -36,7 +36,11 @@ function SiteHeader() {
             className="hidden flex-1 md:flex md:gap-7"
           >
             {nav.map((item) => (
-              <a key={item.href} href={item.href} className="link-nav">
+              <a
+                key={item.href}
+                href={item.href}
+                className={`link-nav ${item.href === "#live" ? "uppercase" : ""}`}
+              >
                 {item.label}
               </a>
             ))}

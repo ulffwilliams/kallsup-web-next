@@ -126,7 +126,6 @@ h6 {
     font-size: var(--text-label);
     font-weight: 400;
     letter-spacing: 0.14em;
-    text-transform: uppercase;
     color: var(--color-kall-500);
     line-height: 1.4;
   }
@@ -179,7 +178,6 @@ h6 {
   font-family: var(--font-mono);
   font-size: var(--text-label);
   letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--color-kall-300);
   transition: color 160ms ease;
 }
@@ -196,7 +194,6 @@ h6 {
     font-family: var(--font-mono);
     font-size: var(--text-label);
     letter-spacing: 0.14em;
-    text-transform: uppercase;
     padding: 0.75rem 1.25rem;
     border: 1px solid var(--color-kall-600);
     color: var(--color-kall-cream);

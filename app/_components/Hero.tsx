@@ -69,7 +69,7 @@ function Hero({ nextGig }: HeroProps) {
           >
             Förhandsbeställ skivan
           </a>
-          <a href="#live" className="btn">
+          <a href="#live" className="btn uppercase">
             Live
           </a>
         </Parallax>
