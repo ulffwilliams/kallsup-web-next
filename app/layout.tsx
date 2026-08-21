@@ -96,9 +96,6 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased min-w-xs">
-        <a href="#main" className="skip-link">
-          Hoppa till innehåll
-        </a>
         <Providers>{children}</Providers>
         <Analytics />
         <SpeedInsights />
