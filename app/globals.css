@@ -386,6 +386,17 @@ h6 {
   transform: none;
 }
 
+/* Neuething puts the dot on `i` at 665-790 units against an 800 cap height,
+   and gives `i` an advance of 255 against `I`'s 258 — so the two differ only by
+   an 85-unit gap between stem and dot. At the 14px this note is set in, that
+   gap is 1.2px, and the grayscale antialiasing forced on at :root fills it with
+   mid-alpha grey. The glyph then paints as one cap-height bar and reads as `I`.
+   Letting this text fall back to subpixel rendering resolves the gap. */
+.gig-note {
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+}
+
 /* Row-level stagger inside a single revealed list — avoids wrapping every <li>
    in its own observer (and its own invalid <ul>). */
 .gig-stagger > li {
