@@ -64,8 +64,8 @@ let inserted = 0;
 for (const gig of tourGigs) {
   await sql`DELETE FROM events WHERE date = ${gig.date}::date AND venue = ${gig.venue}`;
   await sql`
-    INSERT INTO events (date, location, venue, note, ticketlink, freeentry)
-    VALUES (${gig.date}::date, ${gig.location}, ${gig.venue}, ${gig.note}, NULL, false)
+    INSERT INTO events (date, location, venue, note, ticketlink, ticketreleasedate)
+    VALUES (${gig.date}::date, ${gig.location}, ${gig.venue}, ${gig.note}, NULL, NULL)
   `;
   inserted += 1;
   console.log(`  + ${gig.date}  ${gig.location} — ${gig.venue}`);

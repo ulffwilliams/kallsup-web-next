@@ -8,9 +8,16 @@ export type Gig = {
   venue: string;
   note: string | null;
   ticketlink: string | null;
-  /** Only true for shows we know are free. Drives the CTA fallback in GigRow:
-   *  a missing ticketlink means "not on sale yet", not "free entry". */
-  freeentry: boolean;
+  /** "YYYY-MM-DD", or null when no on-sale date has been announced. */
+  ticketreleasedate: string | null;
+  /**
+   * Whether `ticketreleasedate` has arrived — resolved by Postgres, not here.
+   * Vercel runs in UTC, so a JS `new Date()` would still report yesterday for
+   * the first one or two hours of a Stockholm day and hold the ticket link
+   * back. True when there is no release date at all, so a gig that just has a
+   * ticketlink still renders one.
+   */
+  ticketsreleased: boolean;
 };
 
 /*
@@ -20,6 +27,10 @@ export type Gig = {
  * calendar day intact and out of Date's hands entirely; the formatters below
  * split the string rather than re-parsing it.
  */
+
+/** Today in Stockholm, resolved by Postgres so the cutoff matches the band. */
+const TODAY = `(now() AT TIME ZONE 'Europe/Stockholm')::date`;
+
 const SELECT_GIG = `
   id,
   to_char(date, 'YYYY-MM-DD') AS date,
@@ -27,7 +38,8 @@ const SELECT_GIG = `
   venue,
   note,
   ticketlink,
-  freeentry
+  to_char(ticketreleasedate, 'YYYY-MM-DD') AS ticketreleasedate,
+  (ticketreleasedate IS NULL OR ticketreleasedate <= ${TODAY}) AS ticketsreleased
 `;
 
 /*
@@ -63,9 +75,6 @@ function db() {
   return neon(url);
 }
 
-/** Today in Stockholm, resolved by Postgres so the cutoff matches the band. */
-const TODAY = `(now() AT TIME ZONE 'Europe/Stockholm')::date`;
-
 export async function getUpcomingGigs(): Promise<Gig[]> {
   const sql = db();
   const rows = await sql.query(
@@ -97,6 +106,16 @@ const MONTHS_SV = [
   "NOV",
   "DEC",
 ];
+
+/**
+ * "2026-09-12" -> "12 sep". Lowercased because the label styles stopped
+ * uppercasing; splits the string rather than parsing it, for the reason above.
+ */
+export function formatTicketRelease(date: string) {
+  const [, month, day] = date.split("-");
+  const name = MONTHS_SV[Number(month) - 1]?.toLowerCase() ?? month;
+  return `${Number(day)} ${name}`;
+}
 
 /** Splits "YYYY-MM-DD" without constructing a Date. */
 export function formatGigDate(date: string) {

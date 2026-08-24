@@ -19,10 +19,17 @@ The wiring is one Vercel environment variable scoped to one git branch.
   `NOT NULL DEFAULT false`, applied via `scripts/add-freeentry-column.mjs`.
   This had to land on production first: a Neon branch inherits the schema it
   forks from, and the app selects `freeentry` in every environment.
-- `Gig` type and `SELECT_GIG` in `app/_lib/gigs.ts` carry `freeentry`.
-- `GigRow` CTA is now three-way: ticket link → `Biljetter`, else `freeentry` →
-  `Fritt inträde`, else → `Biljetter snart`. Previously a missing ticket link
-  asserted free entry, which would have been wrong for all six tour rows.
+  **Superseded** — see `ticketreleasedate` below.
+- `events.ticketreleasedate` (`DATE`, nullable) replaces it, applied via
+  `scripts/add-ticketreleasedate-column.mjs`. Same production-first ordering,
+  same reason. NULL means no on-sale date announced. The script does not drop
+  `freeentry` unless run with `DROP_FREEENTRY=1`.
+- `Gig` type and `SELECT_GIG` in `app/_lib/gigs.ts` carry `ticketreleasedate`
+  plus a `ticketsreleased` boolean computed in SQL against
+  `now() AT TIME ZONE 'Europe/Stockholm'`, so the on-sale cutoff does not drift
+  by an hour on Vercel's UTC clock.
+- `GigRow` CTA is three-way: released ticket link → `Biljetter`, else a future
+  `ticketreleasedate` → `Biljetter släpps 12 sep`, else → `Biljetter snart`.
 - `scripts/seed-tour-preview.mjs` holds the six dates and refuses to run
   against production (see Safety below). **Already run** against Neon branch
   `tour-preview` (endpoint `ep-purple-forest-agvtr1he`): 6 upcoming rows there,

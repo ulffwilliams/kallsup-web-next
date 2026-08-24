@@ -1,4 +1,4 @@
-import { formatGigDate, type Gig } from "../_lib/gigs";
+import { formatGigDate, formatTicketRelease, type Gig } from "../_lib/gigs";
 
 type GigRowProps = {
   gig: Gig;
@@ -46,7 +46,7 @@ function GigRow({ gig, past = false }: GigRowProps) {
 
       {!past && (
         <div className="col-start-2 mt-2 md:col-start-4 md:mt-0">
-          {gig.ticketlink ? (
+          {gig.ticketlink && gig.ticketsreleased ? (
             <a
               href={gig.ticketlink}
               target="_blank"
@@ -55,10 +55,12 @@ function GigRow({ gig, past = false }: GigRowProps) {
             >
               Biljetter
             </a>
-          ) : gig.freeentry ? (
-            <span className="type-label">Fritt inträde</span>
+          ) : gig.ticketreleasedate && !gig.ticketsreleased ? (
+            <span className="type-label">
+              Biljetter släpps {formatTicketRelease(gig.ticketreleasedate)}
+            </span>
           ) : (
-            <span className="type-label ">Biljetter snart</span>
+            <span className="type-label">Biljetter snart</span>
           )}
         </div>
       )}
