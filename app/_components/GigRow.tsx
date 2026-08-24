@@ -39,7 +39,7 @@ function GigRow({ gig, past = false }: GigRowProps) {
 
       <p className="col-start-2 text-sm tracking-[0.02em] text-kall-300 md:col-start-3">
         {gig.venue}
-        {gig.note && <span className="text-kall-cream"> — {gig.note}</span>}
+        {gig.note && <span className="text-kall-cream">{gig.note}</span>}
       </p>
 
       {!past && (
