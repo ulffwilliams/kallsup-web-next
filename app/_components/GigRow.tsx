@@ -49,7 +49,7 @@ function GigRow({ gig, past = false }: GigRowProps) {
               href={gig.ticketlink}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-solid font-sans tracking-[0.1em] text-kall-cream"
+              className="btn font-sans tracking-[0.1em]"
             >
               Biljetter
             </a>
