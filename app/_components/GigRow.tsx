@@ -1,4 +1,5 @@
 import { formatGigDate, formatTicketRelease, type Gig } from "../_lib/gigs";
+import { ticketHref } from "../_lib/ticketClicks";
 
 type GigRowProps = {
   gig: Gig;
@@ -50,8 +51,9 @@ function GigRow({ gig, past = false }: GigRowProps) {
       {!past && (
         <div className="col-start-2 mt-2 md:col-start-4 md:mt-0">
           {gig.ticketlink && gig.ticketsreleased ? (
+            /* Counted hop, not the vendor URL — see app/go/biljett. */
             <a
-              href={gig.ticketlink}
+              href={ticketHref(gig.id)}
               target="_blank"
               rel="noopener noreferrer"
               className="btn font-sans tracking-[0.1em]"
