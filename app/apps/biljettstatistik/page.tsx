@@ -130,11 +130,6 @@ export default async function BiljettstatistikPage() {
         Biljettstatistik
       </h1>
 
-      <p className="type-meta mt-3 max-w-xl">
-        Antal klick på Biljetter-knappen. Räknas på servern, så adblock stör
-        inte — men det är klick, inte sålda biljetter.
-      </p>
-
       <div className="mt-8 flex gap-10">
         <div>
           <span className="font-display block text-4xl leading-none font-bold text-kall-cream tabular-nums">
