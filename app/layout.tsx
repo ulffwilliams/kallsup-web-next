@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import Providers from "./providers";
 
 const neuething = localFont({
   src: [
@@ -96,7 +95,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased min-w-xs">
-        <Providers>{children}</Providers>
+        {children}
         <Analytics />
         <SpeedInsights />
       </body>

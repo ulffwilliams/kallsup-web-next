@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import { formatGigDate } from "../../_lib/gigs";
 import { getTicketClickStats } from "../../_lib/ticketClicks";
+import { unlocked } from "./auth";
+import PasswordGate from "./PasswordGate";
 
 export const metadata = { title: "Biljettstatistik" };
 
@@ -108,6 +110,10 @@ function Table({
  * count intent to buy, not sales; the vendor is the only one who knows those.
  */
 export default async function BiljettstatistikPage() {
+  if (!(await unlocked())) {
+    return <PasswordGate />;
+  }
+
   const gigs = await getTicketClickStats();
   const upcoming = gigs.filter((gig) => gig.upcoming);
   const past = gigs.filter((gig) => !gig.upcoming);

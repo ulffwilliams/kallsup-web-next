@@ -8,9 +8,33 @@ type GigRowProps = {
 };
 
 /**
+ * The "leaves the site" mark on the ticket CTA. Drawn rather than set as the
+ * ↗ character: the label runs in Elegant Typewriter, which has no glyph for it,
+ * so the browser would substitute a fallback face at its own weight and size.
+ */
+function OutboundArrow() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 10 10"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="square"
+      className="btn-arrow"
+    >
+      <path d="M2.2 7.8 7.8 2.2" />
+      <path d="M3.6 2.2H7.8V6.4" />
+    </svg>
+  );
+}
+
+/**
  * One show as a grid row: date block, city, venue, action. Collapses to a
- * two-column stack on narrow screens. The gold bar on the left wipes in on
- * hover — the only motion, so the row stays scannable.
+ * two-column stack on narrow screens. Motion is deliberately rationed so the
+ * list stays scannable: the gold bar wipes in on row hover, and the CTA's
+ * arrow nudges on its own hover. Nothing moves for a mouse merely passing
+ * through.
  */
 function GigRow({ gig, past = false }: GigRowProps) {
   const date = formatGigDate(gig.date);
@@ -56,9 +80,10 @@ function GigRow({ gig, past = false }: GigRowProps) {
               href={ticketHref(gig.id)}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn font-sans tracking-[0.1em]"
+              className="btn btn-solid"
             >
               Biljetter
+              <OutboundArrow />
             </a>
           ) : gig.ticketreleasedate && !gig.ticketsreleased ? (
             <span className="type-label">

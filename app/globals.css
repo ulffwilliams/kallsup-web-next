@@ -219,6 +219,21 @@ h6 {
     background: var(--color-kall-gold);
     border-color: var(--color-kall-gold);
   }
+
+  /* Outbound marker for buttons that leave the site. Sized in em so it tracks
+     the label rather than a fixed pixel value, and it uses the gap .btn
+     already reserves. The nudge is the whole animation — it moves along its
+     own diagonal, so it reads as "away" rather than as a wobble. */
+  .btn-arrow {
+    flex: none;
+    width: 0.65em;
+    height: 0.65em;
+    transition: transform 160ms ease;
+  }
+  .btn:hover .btn-arrow,
+  .btn:focus-visible .btn-arrow {
+    transform: translate(1.5px, -1.5px);
+  }
 }
 
 
@@ -820,6 +835,13 @@ h6 {
   .hover-zoom,
   .group:hover .hover-zoom,
   .group:focus-within .hover-zoom {
+    transform: none;
+    transition: none;
+  }
+
+  .btn-arrow,
+  .btn:hover .btn-arrow,
+  .btn:focus-visible .btn-arrow {
     transform: none;
     transition: none;
   }
