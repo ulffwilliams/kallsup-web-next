@@ -55,6 +55,16 @@ export const metadata: Metadata = {
     template: "%s — Kallsup",
   },
   description,
+  /* Safari's data detectors read the gig rows (date + city + venue) as
+     addresses and mark them with a dotted underline. Nothing here is meant to
+     be tapped into Contacts or Calendar; explicit mailto:/tel: links are
+     unaffected. */
+  formatDetection: {
+    telephone: false,
+    date: false,
+    address: false,
+    email: false,
+  },
   openGraph: {
     title: "Kallsup",
     description,
