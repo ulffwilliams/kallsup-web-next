@@ -74,7 +74,9 @@ function GigRow({ gig, past = false }: GigRowProps) {
 
       {!past && (
         <div className="col-start-2 mt-2 md:col-start-4 md:mt-0">
-          {gig.ticketlink && gig.ticketsreleased ? (
+          {gig.soldout ? (
+            <span className="type-label">Slutsålt</span>
+          ) : gig.ticketlink && gig.ticketsreleased ? (
             /* Counted hop, not the vendor URL — see app/go/biljett. */
             <a
               href={ticketHref(gig.id)}
