@@ -4,6 +4,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import CartProvider from "./_components/CartProvider";
+import CartDrawer from "./_components/CartDrawer";
 import { isShopifyConfigured } from "./_lib/shopify";
 
 const neuething = localFont({
@@ -109,6 +110,7 @@ export default function RootLayout({
       <body className="antialiased min-w-xs">
         <CartProvider shopEnabled={isShopifyConfigured()}>
           {children}
+          <CartDrawer />
         </CartProvider>
         <Analytics />
         <SpeedInsights />
