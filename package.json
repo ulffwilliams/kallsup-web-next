@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test --experimental-strip-types app/_lib/shopify.test.ts app/_lib/variants.test.ts app/_lib/cart.test.ts"
+    "test": "node --test --experimental-strip-types app/_lib/shopify.test.ts app/_lib/variants.test.ts app/_lib/cart.test.ts",
+    "smoke": "node --env-file=.env.local scripts/shopify-smoke.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
