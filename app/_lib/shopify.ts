@@ -23,14 +23,47 @@ const API_VERSION = process.env.SHOPIFY_API_VERSION ?? "2026-07";
 /** Market context for pricing. SE keeps everything in SEK. */
 const MARKET_COUNTRY = "SE";
 
+export type ShopifyImage = {
+  url: string;
+  alt: string;
+  width: number;
+  height: number;
+};
+
+export type ShopifyVariant = {
+  id: string;
+  title: string;
+  available: boolean;
+  price: string;
+  /** `selectedOptions` flattened: `{ Storlek: "M" }`. */
+  options: Record<string, string>;
+};
+
+export type ShopifyOptionGroup = {
+  name: string;
+  values: string[];
+};
+
 export type ShopifyProduct = {
   id: string;
   title: string;
   handle: string;
   url: string;
+  /** Lowest variant price, already formatted for display. */
   price: string;
   available: boolean;
-  image: { url: string; alt: string; width: number; height: number } | null;
+  image: ShopifyImage | null;
+  /** Second product shot, used for the hover crossfade. */
+  hoverImage: ShopifyImage | null;
+  optionGroups: ShopifyOptionGroup[];
+  variants: ShopifyVariant[];
+};
+
+type ImageNode = {
+  url: string;
+  altText: string | null;
+  width: number | null;
+  height: number | null;
 };
 
 type ProductNode = {
@@ -39,15 +72,22 @@ type ProductNode = {
   handle: string;
   onlineStoreUrl: string | null;
   availableForSale: boolean;
+  options: Array<{ name: string; optionValues: Array<{ name: string }> }>;
   priceRange: {
     minVariantPrice: { amount: string; currencyCode: string };
   };
-  featuredImage: {
-    url: string;
-    altText: string | null;
-    width: number | null;
-    height: number | null;
-  } | null;
+  images: { edges: Array<{ node: ImageNode }> };
+  variants: {
+    edges: Array<{
+      node: {
+        id: string;
+        title: string;
+        availableForSale: boolean;
+        price: { amount: string; currencyCode: string };
+        selectedOptions: Array<{ name: string; value: string }>;
+      };
+    }>;
+  };
 };
 
 type StorefrontResponse = {
@@ -60,6 +100,10 @@ type StorefrontResponse = {
  * @inContext pins the market so prices resolve in the Swedish market's currency
  * even if the store later sells in several. Without it, Shopify picks the
  * context from the *server's* location, which on Vercel is not Sweden.
+ *
+ * `quantityAvailable` is deliberately absent: the storefront token lacks
+ * `unauthenticated_read_product_inventory`, and the field answers with a
+ * GraphQL error rather than null, which would blank the entire section.
  */
 const PRODUCTS_QUERY = /* GraphQL */ `
   query MerchProducts($first: Int!, $country: CountryCode!)
@@ -72,17 +116,44 @@ const PRODUCTS_QUERY = /* GraphQL */ `
           handle
           onlineStoreUrl
           availableForSale
+          options {
+            name
+            optionValues {
+              name
+            }
+          }
           priceRange {
             minVariantPrice {
               amount
               currencyCode
             }
           }
-          featuredImage {
-            url
-            altText
-            width
-            height
+          images(first: 2) {
+            edges {
+              node {
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
+          variants(first: 20) {
+            edges {
+              node {
+                id
+                title
+                availableForSale
+                price {
+                  amount
+                  currencyCode
+                }
+                selectedOptions {
+                  name
+                  value
+                }
+              }
+            }
           }
         }
       }
@@ -201,10 +272,22 @@ function formatPrice(amount: string, currencyCode: string) {
   }).format(value);
 }
 
+/** `altText` is decorative on the hover shot — the first image carries the label. */
+function normalizeImage(node: ImageNode, fallbackAlt: string): ShopifyImage {
+  return {
+    url: node.url,
+    alt: node.altText ?? fallbackAlt,
+    width: node.width ?? 1200,
+    height: node.height ?? 1200,
+  };
+}
+
 export function normalizeProduct(
   node: ProductNode,
   domain: string,
 ): ShopifyProduct {
+  const [first, second] = node.images.edges;
+
   return {
     id: node.id,
     title: node.title,
@@ -215,14 +298,21 @@ export function normalizeProduct(
       node.priceRange.minVariantPrice.currencyCode,
     ),
     available: node.availableForSale,
-    image: node.featuredImage
-      ? {
-          url: node.featuredImage.url,
-          alt: node.featuredImage.altText ?? node.title,
-          width: node.featuredImage.width ?? 1200,
-          height: node.featuredImage.height ?? 1200,
-        }
-      : null,
+    image: first ? normalizeImage(first.node, node.title) : null,
+    hoverImage: second ? normalizeImage(second.node, "") : null,
+    optionGroups: node.options.map((option) => ({
+      name: option.name,
+      values: option.optionValues.map((value) => value.name),
+    })),
+    variants: node.variants.edges.map(({ node: variant }) => ({
+      id: variant.id,
+      title: variant.title,
+      available: variant.availableForSale,
+      price: formatPrice(variant.price.amount, variant.price.currencyCode),
+      options: Object.fromEntries(
+        variant.selectedOptions.map((option) => [option.name, option.value]),
+      ),
+    })),
   };
 }
 
