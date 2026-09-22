@@ -23,46 +23,87 @@ const API_VERSION = process.env.SHOPIFY_API_VERSION ?? "2026-07";
 /** Market context for pricing. SE keeps everything in SEK. */
 const MARKET_COUNTRY = "SE";
 
+export type ShopifyImage = {
+  url: string;
+  alt: string;
+  width: number;
+  height: number;
+};
+
+export type ShopifyVariant = {
+  id: string;
+  title: string;
+  available: boolean;
+  price: string;
+  /** `selectedOptions` flattened: `{ Storlek: "M" }`. */
+  options: Record<string, string>;
+};
+
+export type ShopifyOptionGroup = {
+  name: string;
+  values: string[];
+};
+
 export type ShopifyProduct = {
   id: string;
   title: string;
   handle: string;
   url: string;
+  /** Lowest variant price, already formatted for display. */
   price: string;
   available: boolean;
-  image: { url: string; alt: string; width: number; height: number } | null;
+  image: ShopifyImage | null;
+  /** Second product shot, used for the hover crossfade. */
+  hoverImage: ShopifyImage | null;
+  optionGroups: ShopifyOptionGroup[];
+  variants: ShopifyVariant[];
+};
+
+type ImageNode = {
+  url: string;
+  altText: string | null;
+  width: number | null;
+  height: number | null;
+};
+
+type ProductNode = {
+  id: string;
+  title: string;
+  handle: string;
+  onlineStoreUrl: string | null;
+  availableForSale: boolean;
+  options: Array<{ name: string; optionValues: Array<{ name: string }> }>;
+  priceRange: {
+    minVariantPrice: { amount: string; currencyCode: string };
+  };
+  images: { edges: Array<{ node: ImageNode }> };
+  variants: {
+    edges: Array<{
+      node: {
+        id: string;
+        title: string;
+        availableForSale: boolean;
+        price: { amount: string; currencyCode: string };
+        selectedOptions: Array<{ name: string; value: string }>;
+      };
+    }>;
+  };
 };
 
 type StorefrontResponse = {
-  data?: {
-    products: {
-      edges: Array<{
-        node: {
-          id: string;
-          title: string;
-          handle: string;
-          onlineStoreUrl: string | null;
-          availableForSale: boolean;
-          priceRange: {
-            minVariantPrice: { amount: string; currencyCode: string };
-          };
-          featuredImage: {
-            url: string;
-            altText: string | null;
-            width: number | null;
-            height: number | null;
-          } | null;
-        };
-      }>;
-    };
+  products: {
+    edges: Array<{ node: ProductNode }>;
   };
-  errors?: Array<{ message: string }>;
 };
 
 /*
  * @inContext pins the market so prices resolve in the Swedish market's currency
  * even if the store later sells in several. Without it, Shopify picks the
  * context from the *server's* location, which on Vercel is not Sweden.
+ *
+ * `quantityAvailable` is deliberately absent: the storefront token lacks
+ * `unauthenticated_read_product_inventory`, and the field answers with a
+ * GraphQL error rather than null, which would blank the entire section.
  */
 const PRODUCTS_QUERY = /* GraphQL */ `
   query MerchProducts($first: Int!, $country: CountryCode!)
@@ -75,17 +116,44 @@ const PRODUCTS_QUERY = /* GraphQL */ `
           handle
           onlineStoreUrl
           availableForSale
+          options {
+            name
+            optionValues {
+              name
+            }
+          }
           priceRange {
             minVariantPrice {
               amount
               currencyCode
             }
           }
-          featuredImage {
-            url
-            altText
-            width
-            height
+          images(first: 2) {
+            edges {
+              node {
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
+          variants(first: 20) {
+            edges {
+              node {
+                id
+                title
+                availableForSale
+                price {
+                  amount
+                  currencyCode
+                }
+                selectedOptions {
+                  name
+                  value
+                }
+              }
+            }
           }
         }
       }
@@ -114,28 +182,30 @@ export function isShopifyConfigured() {
   return Boolean(process.env.SHOPIFY_STORE_DOMAIN && authHeader());
 }
 
-function formatPrice(amount: string, currencyCode: string) {
-  const value = Number(amount);
+type StorefrontRequest = {
+  variables?: Record<string, unknown>;
+  /** Pass `"no-store"` for cart traffic. Omit to use `next` caching. */
+  cache?: RequestCache;
+  next?: { revalidate?: number; tags?: string[] };
+};
 
-  if (Number.isNaN(value)) {
-    return "";
-  }
-
-  return new Intl.NumberFormat("sv-SE", {
-    style: "currency",
-    currency: currencyCode,
-    maximumFractionDigits: value % 1 === 0 ? 0 : 2,
-  }).format(value);
-}
+type GraphQLResponse<T> = {
+  data?: T;
+  errors?: Array<{ message: string }>;
+};
 
 /**
- * Returns the storefront's products, or null when the shop isn't configured or
- * the request fails — callers fall back to placeholder cards rather than
- * rendering an empty section.
+ * Single entry point for Storefront traffic. Returns `data` or `null` —
+ * callers decide what an absent response means for their UI.
+ *
+ * Every operation must declare `$country: CountryCode!` and apply
+ * `@inContext(country: $country)`; the variable is injected here so pricing
+ * resolves in the Swedish market rather than the server's location.
  */
-export async function getMerchProducts(
-  first = 8,
-): Promise<ShopifyProduct[] | null> {
+export async function storefront<T>(
+  query: string,
+  { variables, cache, next }: StorefrontRequest = {},
+): Promise<T | null> {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const auth = authHeader();
 
@@ -153,11 +223,11 @@ export async function getMerchProducts(
           ...auth,
         },
         body: JSON.stringify({
-          query: PRODUCTS_QUERY,
-          variables: { first, country: MARKET_COUNTRY },
+          query,
+          variables: { country: MARKET_COUNTRY, ...variables },
         }),
-        // Products change rarely; matches the page's own revalidate window.
-        next: { revalidate: 600, tags: ["merch"] },
+        ...(cache ? { cache } : {}),
+        ...(next ? { next } : {}),
       },
     );
 
@@ -171,7 +241,7 @@ export async function getMerchProducts(
       return null;
     }
 
-    const payload = (await response.json()) as StorefrontResponse;
+    const payload = (await response.json()) as GraphQLResponse<T>;
 
     if (payload.errors?.length) {
       console.error(
@@ -181,29 +251,94 @@ export async function getMerchProducts(
       return null;
     }
 
-    const edges = payload.data?.products.edges ?? [];
-
-    return edges.map(({ node }) => ({
-      id: node.id,
-      title: node.title,
-      handle: node.handle,
-      url: node.onlineStoreUrl ?? `https://${domain}/products/${node.handle}`,
-      price: formatPrice(
-        node.priceRange.minVariantPrice.amount,
-        node.priceRange.minVariantPrice.currencyCode,
-      ),
-      available: node.availableForSale,
-      image: node.featuredImage
-        ? {
-            url: node.featuredImage.url,
-            alt: node.featuredImage.altText ?? node.title,
-            width: node.featuredImage.width ?? 1200,
-            height: node.featuredImage.height ?? 1200,
-          }
-        : null,
-    }));
+    return payload.data ?? null;
   } catch (error) {
     console.error("Shopify Storefront request failed:", error);
     return null;
   }
+}
+
+export function formatPrice(amount: string, currencyCode: string) {
+  const value = Number(amount);
+
+  if (Number.isNaN(value)) {
+    return "";
+  }
+
+  return new Intl.NumberFormat("sv-SE", {
+    style: "currency",
+    currency: currencyCode,
+    maximumFractionDigits: value % 1 === 0 ? 0 : 2,
+  }).format(value);
+}
+
+/** `altText` is decorative on the hover shot — the first image carries the label. */
+function normalizeImage(node: ImageNode, fallbackAlt: string): ShopifyImage {
+  return {
+    url: node.url,
+    alt: node.altText ?? fallbackAlt,
+    width: node.width ?? 1200,
+    height: node.height ?? 1200,
+  };
+}
+
+export function normalizeProduct(
+  node: ProductNode,
+  domain: string,
+): ShopifyProduct {
+  const [first, second] = node.images.edges;
+
+  return {
+    id: node.id,
+    title: node.title,
+    handle: node.handle,
+    url: node.onlineStoreUrl ?? `https://${domain}/products/${node.handle}`,
+    price: formatPrice(
+      node.priceRange.minVariantPrice.amount,
+      node.priceRange.minVariantPrice.currencyCode,
+    ),
+    available: node.availableForSale,
+    image: first ? normalizeImage(first.node, node.title) : null,
+    hoverImage: second ? normalizeImage(second.node, "") : null,
+    optionGroups: node.options.map((option) => ({
+      name: option.name,
+      values: option.optionValues.map((value) => value.name),
+    })),
+    variants: node.variants.edges.map(({ node: variant }) => ({
+      id: variant.id,
+      title: variant.title,
+      available: variant.availableForSale,
+      price: formatPrice(variant.price.amount, variant.price.currencyCode),
+      options: Object.fromEntries(
+        variant.selectedOptions.map((option) => [option.name, option.value]),
+      ),
+    })),
+  };
+}
+
+/**
+ * Returns the storefront's products, or null when the shop isn't configured or
+ * the request fails — callers fall back to placeholder cards rather than
+ * rendering an empty section.
+ */
+export async function getMerchProducts(
+  first = 8,
+): Promise<ShopifyProduct[] | null> {
+  const domain = process.env.SHOPIFY_STORE_DOMAIN;
+
+  if (!domain) {
+    return null;
+  }
+
+  const data = await storefront<StorefrontResponse>(PRODUCTS_QUERY, {
+    variables: { first },
+    // Products change rarely; matches the page's own revalidate window.
+    next: { revalidate: 600, tags: ["merch"] },
+  });
+
+  if (!data) {
+    return null;
+  }
+
+  return data.products.edges.map(({ node }) => normalizeProduct(node, domain));
 }

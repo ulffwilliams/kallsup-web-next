@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import MobileMenu from "./MobileMenu";
+import { useCart } from "./CartProvider";
 import { nav, socials, site } from "../_lib/site";
 
 /**
@@ -14,6 +15,8 @@ function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+  const { cart, shopEnabled, openCart } = useCart();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 48);
@@ -84,6 +87,22 @@ function SiteHeader() {
                 </a>
               ))}
             </div>
+
+            {shopEnabled && (
+              <button
+                type="button"
+                onClick={openCart}
+                aria-label={
+                  cart?.totalQuantity
+                    ? `Varukorg, ${cart.totalQuantity} varor`
+                    : "Varukorg"
+                }
+                className="type-label text-kall-cream"
+              >
+                Korg
+                {cart?.totalQuantity ? ` (${cart.totalQuantity})` : ""}
+              </button>
+            )}
 
             <button
               type="button"
