@@ -33,30 +33,27 @@ export type ShopifyProduct = {
   image: { url: string; alt: string; width: number; height: number } | null;
 };
 
-type StorefrontResponse = {
-  data?: {
-    products: {
-      edges: Array<{
-        node: {
-          id: string;
-          title: string;
-          handle: string;
-          onlineStoreUrl: string | null;
-          availableForSale: boolean;
-          priceRange: {
-            minVariantPrice: { amount: string; currencyCode: string };
-          };
-          featuredImage: {
-            url: string;
-            altText: string | null;
-            width: number | null;
-            height: number | null;
-          } | null;
-        };
-      }>;
-    };
+type ProductNode = {
+  id: string;
+  title: string;
+  handle: string;
+  onlineStoreUrl: string | null;
+  availableForSale: boolean;
+  priceRange: {
+    minVariantPrice: { amount: string; currencyCode: string };
   };
-  errors?: Array<{ message: string }>;
+  featuredImage: {
+    url: string;
+    altText: string | null;
+    width: number | null;
+    height: number | null;
+  } | null;
+};
+
+type StorefrontResponse = {
+  products: {
+    edges: Array<{ node: ProductNode }>;
+  };
 };
 
 /*
@@ -114,28 +111,30 @@ export function isShopifyConfigured() {
   return Boolean(process.env.SHOPIFY_STORE_DOMAIN && authHeader());
 }
 
-function formatPrice(amount: string, currencyCode: string) {
-  const value = Number(amount);
+type StorefrontRequest = {
+  variables?: Record<string, unknown>;
+  /** Pass `"no-store"` for cart traffic. Omit to use `next` caching. */
+  cache?: RequestCache;
+  next?: { revalidate?: number; tags?: string[] };
+};
 
-  if (Number.isNaN(value)) {
-    return "";
-  }
-
-  return new Intl.NumberFormat("sv-SE", {
-    style: "currency",
-    currency: currencyCode,
-    maximumFractionDigits: value % 1 === 0 ? 0 : 2,
-  }).format(value);
-}
+type GraphQLResponse<T> = {
+  data?: T;
+  errors?: Array<{ message: string }>;
+};
 
 /**
- * Returns the storefront's products, or null when the shop isn't configured or
- * the request fails — callers fall back to placeholder cards rather than
- * rendering an empty section.
+ * Single entry point for Storefront traffic. Returns `data` or `null` —
+ * callers decide what an absent response means for their UI.
+ *
+ * Every operation must declare `$country: CountryCode!` and apply
+ * `@inContext(country: $country)`; the variable is injected here so pricing
+ * resolves in the Swedish market rather than the server's location.
  */
-export async function getMerchProducts(
-  first = 8,
-): Promise<ShopifyProduct[] | null> {
+export async function storefront<T>(
+  query: string,
+  { variables, cache, next }: StorefrontRequest = {},
+): Promise<T | null> {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const auth = authHeader();
 
@@ -153,11 +152,11 @@ export async function getMerchProducts(
           ...auth,
         },
         body: JSON.stringify({
-          query: PRODUCTS_QUERY,
-          variables: { first, country: MARKET_COUNTRY },
+          query,
+          variables: { country: MARKET_COUNTRY, ...variables },
         }),
-        // Products change rarely; matches the page's own revalidate window.
-        next: { revalidate: 600, tags: ["merch"] },
+        ...(cache ? { cache } : {}),
+        ...(next ? { next } : {}),
       },
     );
 
@@ -171,7 +170,7 @@ export async function getMerchProducts(
       return null;
     }
 
-    const payload = (await response.json()) as StorefrontResponse;
+    const payload = (await response.json()) as GraphQLResponse<T>;
 
     if (payload.errors?.length) {
       console.error(
@@ -181,29 +180,75 @@ export async function getMerchProducts(
       return null;
     }
 
-    const edges = payload.data?.products.edges ?? [];
-
-    return edges.map(({ node }) => ({
-      id: node.id,
-      title: node.title,
-      handle: node.handle,
-      url: node.onlineStoreUrl ?? `https://${domain}/products/${node.handle}`,
-      price: formatPrice(
-        node.priceRange.minVariantPrice.amount,
-        node.priceRange.minVariantPrice.currencyCode,
-      ),
-      available: node.availableForSale,
-      image: node.featuredImage
-        ? {
-            url: node.featuredImage.url,
-            alt: node.featuredImage.altText ?? node.title,
-            width: node.featuredImage.width ?? 1200,
-            height: node.featuredImage.height ?? 1200,
-          }
-        : null,
-    }));
+    return payload.data ?? null;
   } catch (error) {
     console.error("Shopify Storefront request failed:", error);
     return null;
   }
+}
+
+function formatPrice(amount: string, currencyCode: string) {
+  const value = Number(amount);
+
+  if (Number.isNaN(value)) {
+    return "";
+  }
+
+  return new Intl.NumberFormat("sv-SE", {
+    style: "currency",
+    currency: currencyCode,
+    maximumFractionDigits: value % 1 === 0 ? 0 : 2,
+  }).format(value);
+}
+
+export function normalizeProduct(
+  node: ProductNode,
+  domain: string,
+): ShopifyProduct {
+  return {
+    id: node.id,
+    title: node.title,
+    handle: node.handle,
+    url: node.onlineStoreUrl ?? `https://${domain}/products/${node.handle}`,
+    price: formatPrice(
+      node.priceRange.minVariantPrice.amount,
+      node.priceRange.minVariantPrice.currencyCode,
+    ),
+    available: node.availableForSale,
+    image: node.featuredImage
+      ? {
+          url: node.featuredImage.url,
+          alt: node.featuredImage.altText ?? node.title,
+          width: node.featuredImage.width ?? 1200,
+          height: node.featuredImage.height ?? 1200,
+        }
+      : null,
+  };
+}
+
+/**
+ * Returns the storefront's products, or null when the shop isn't configured or
+ * the request fails — callers fall back to placeholder cards rather than
+ * rendering an empty section.
+ */
+export async function getMerchProducts(
+  first = 8,
+): Promise<ShopifyProduct[] | null> {
+  const domain = process.env.SHOPIFY_STORE_DOMAIN;
+
+  if (!domain) {
+    return null;
+  }
+
+  const data = await storefront<StorefrontResponse>(PRODUCTS_QUERY, {
+    variables: { first },
+    // Products change rarely; matches the page's own revalidate window.
+    next: { revalidate: 600, tags: ["merch"] },
+  });
+
+  if (!data) {
+    return null;
+  }
+
+  return data.products.edges.map(({ node }) => normalizeProduct(node, domain));
 }
