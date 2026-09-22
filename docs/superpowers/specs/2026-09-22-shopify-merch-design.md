@@ -70,13 +70,16 @@ helper that queries and mutations share. Mutations pass `cache: "no-store"`.
 
 Extend the product query with:
 
-- `options { name values }` — drives the chip groups
-- `variants(first: 20) { id title availableForSale quantityAvailable price { amount currencyCode } selectedOptions { name value } }`
+- `options { name optionValues { name } }` — drives the chip groups. The older
+  `options { values }` shape no longer exists in `2026-07`.
+- `variants(first: 20) { id title availableForSale price { amount currencyCode } selectedOptions { name value } }`
 - `images(first: 2)` — the second image feeds the existing hover-crossfade
 
-`quantityAvailable` needs `unauthenticated_read_product_inventory`. If the
-token lacks it the field returns `null`; treat `null` as "in stock" and rely on
-`availableForSale`. Do not block on the scope.
+`quantityAvailable` is deliberately **not** queried. The store's token lacks
+`unauthenticated_read_product_inventory`, and the field does not degrade to
+`null` — it raises a GraphQL `ACCESS_DENIED` error, which the existing
+`payload.errors?.length` guard turns into a `null` return and an empty merch
+section. `availableForSale` carries the in-stock signal on its own.
 
 Types: extend `ShopifyProduct` with `options` and `variants`, add
 `ShopifyVariant`, add a normalized `Cart` type (`id`, `checkoutUrl`,
@@ -94,8 +97,10 @@ Cart identity lives in a cookie:
 
 - name `kallsup_cart`, `httpOnly`, `sameSite: "lax"`, `secure` outside dev,
   `maxAge` 14 days
-- the value is the **full** `cart.id`, including its `?key=…` query string —
-  `cart(id:)` rejects the id without the key
+- the value is the **full** `cart.id`, including its `?key=…` query string.
+  `cart(id:)` also resolves the bare id on `2026-07`, but the key is what
+  authorizes mutations against carts created by another session, so it is
+  stored and passed through verbatim.
 - Shopify expires abandoned carts after ~10 days. When `cart` comes back
   `null`, clear the cookie and create a fresh cart rather than erroring
 
@@ -186,9 +191,15 @@ merch cards, and stay as they are.
 
 ## Verification
 
-The repo has no test runner, and this change does not justify introducing one.
-Verification is therefore explicit and scripted where it can be:
+The repo has no test runner, but Node 22.14 runs TypeScript tests natively —
+`node --test --experimental-strip-types` was confirmed working against a
+scratch `.test.ts`. Pure logic therefore gets real unit tests with no new
+dependencies, and the integration edges get a smoke script:
 
+0. `npm test` → `node --test --experimental-strip-types "app/_lib/**/*.test.ts"`,
+   covering the pure functions: variant resolution from selected options,
+   cart normalization from a recorded Storefront payload, and price
+   formatting. Network calls are not unit-tested; the smoke script covers them.
 1. `scripts/shopify-smoke.mjs` (new) — hits the Storefront API with the env
    token and asserts the response shape the code depends on: products present,
    each with `options`, at least one variant with an `id` and a price, and a
