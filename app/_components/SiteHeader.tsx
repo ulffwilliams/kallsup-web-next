@@ -97,10 +97,26 @@ function SiteHeader() {
                     ? `Varukorg, ${cart.totalQuantity} varor`
                     : "Varukorg"
                 }
-                className="type-label text-kall-cream"
+                className="social-img relative"
               >
-                Korg
-                {cart?.totalQuantity ? ` (${cart.totalQuantity})` : ""}
+                <Image
+                  src="/images/cart.svg"
+                  alt=""
+                  width={20}
+                  height={20}
+                  className="size-5"
+                />
+                {/* Count sits outside the mark rather than inside a filled
+                    badge — the icon is 20px, and a disc that small turns the
+                    digit into a smudge. */}
+                {cart?.totalQuantity ? (
+                  <span
+                    aria-hidden="true"
+                    className="type-label absolute -top-1.5 -right-2 text-kall-gold tabular-nums"
+                  >
+                    {cart.totalQuantity}
+                  </span>
+                ) : null}
               </button>
             )}
 

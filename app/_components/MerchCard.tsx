@@ -128,7 +128,11 @@ function MerchCard({ product }: { product: ShopifyProduct }) {
         disabled={soldOut || isPending}
         className="btn btn-solid mt-4 w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {soldOut ? "Slutsåld" : isPending ? "Lägger i korg…" : "Lägg i korg"}
+        {soldOut
+          ? "Slutsåld"
+          : isPending
+            ? "Lägger i varukorg…"
+            : "Lägg i varukorg"}
       </button>
 
       {error && (
