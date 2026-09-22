@@ -258,7 +258,7 @@ export async function storefront<T>(
   }
 }
 
-function formatPrice(amount: string, currencyCode: string) {
+export function formatPrice(amount: string, currencyCode: string) {
   const value = Number(amount);
 
   if (Number.isNaN(value)) {
