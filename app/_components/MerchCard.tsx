@@ -56,7 +56,9 @@ function MerchCard({ product, linkToProduct = true }: MerchCardProps) {
       <p className="mt-4 text-sm tracking-[0.04em] text-kall-cream uppercase">
         {product.title}
       </p>
-      <p className="type-label mt-1">{product.price}</p>
+      {/* kall-500 label type buried the price against the imagery; cream at
+          meta size keeps it readable without competing with the name. */}
+      <p className="type-meta mt-1 text-kall-cream">{product.price}</p>
     </>
   );
 
@@ -74,7 +76,7 @@ function MerchCard({ product, linkToProduct = true }: MerchCardProps) {
         </>
       )}
 
-      <AddToCartForm product={product} />
+      <AddToCartForm product={product} mode="card" />
     </div>
   );
 }
