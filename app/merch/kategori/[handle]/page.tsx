@@ -71,7 +71,10 @@ export default async function CategoryPage({ params }: PageProps) {
   return (
     <section className="section-y pt-32 md:pt-40">
       <div className="shell">
-        <SectionHeader title={collection.title} />
+        {/* Always "Merch" — the underlined chip below says which category you
+            are in, and swapping the masthead made every category read as a
+            separate section of the site. */}
+        <SectionHeader title="Merch" />
 
         <Reveal>
           <CategoryNav categories={categories} current={collection.handle} />
