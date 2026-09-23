@@ -62,6 +62,27 @@ export type ShopifyProduct = {
   variants: ShopifyVariant[];
 };
 
+export type ShopifyCollection = {
+  id: string;
+  handle: string;
+  title: string;
+  /** Plain-text body from the admin. Doubles as the meta description. */
+  description: string;
+  seoTitle: string | null;
+  seoDescription: string | null;
+};
+
+export type ShopifyProductDetail = ShopifyProduct & {
+  /** Admin-authored HTML. Rendered with dangerouslySetInnerHTML. */
+  descriptionHtml: string;
+  /** Plain text version, used for meta descriptions. */
+  description: string;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  /** Every shot, not just the two the grid card uses. */
+  images: ShopifyImage[];
+};
+
 type ImageNode = {
   url: string;
   altText: string | null;
@@ -170,6 +191,133 @@ const PRODUCTS_QUERY = /* GraphQL */ `
       edges {
         node {
           ...ProductFields
+        }
+      }
+    }
+  }
+`;
+
+const COLLECTION_FIELDS = /* GraphQL */ `
+  fragment CollectionFields on Collection {
+    id
+    handle
+    title
+    description
+    seo {
+      title
+      description
+    }
+  }
+`;
+
+/*
+ * sortKey: TITLE gives a stable alphabetical order. Shopify has no manual
+ * ordering *between* collections, so anything else would shuffle as the store
+ * is edited.
+ */
+const COLLECTIONS_QUERY = /* GraphQL */ `
+  ${COLLECTION_FIELDS}
+  query MerchCollections($country: CountryCode!)
+  @inContext(country: $country) {
+    collections(first: 20, sortKey: TITLE) {
+      edges {
+        node {
+          ...CollectionFields
+        }
+      }
+    }
+  }
+`;
+
+const COLLECTION_QUERY = /* GraphQL */ `
+  ${COLLECTION_FIELDS}
+  ${PRODUCT_FIELDS}
+  query MerchCollection($handle: String!, $country: CountryCode!)
+  @inContext(country: $country) {
+    collection(handle: $handle) {
+      ...CollectionFields
+      products(first: 100, sortKey: COLLECTION_DEFAULT) {
+        edges {
+          node {
+            ...ProductFields
+          }
+        }
+      }
+    }
+  }
+`;
+
+const ALL_PRODUCTS_QUERY = /* GraphQL */ `
+  ${PRODUCT_FIELDS}
+  query AllMerchProducts($first: Int!, $country: CountryCode!)
+  @inContext(country: $country) {
+    products(first: $first, sortKey: BEST_SELLING) {
+      edges {
+        node {
+          ...ProductFields
+        }
+      }
+    }
+  }
+`;
+
+/*
+ * Its own query rather than a reuse of ProductFields: the page needs the full
+ * gallery, the description and the SEO overrides, none of which a grid card
+ * should pay for.
+ */
+const PRODUCT_QUERY = /* GraphQL */ `
+  query MerchProduct($handle: String!, $country: CountryCode!)
+  @inContext(country: $country) {
+    product(handle: $handle) {
+      id
+      title
+      handle
+      onlineStoreUrl
+      availableForSale
+      description
+      descriptionHtml
+      seo {
+        title
+        description
+      }
+      options {
+        name
+        optionValues {
+          name
+        }
+      }
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      images(first: 10) {
+        edges {
+          node {
+            url
+            altText
+            width
+            height
+          }
+        }
+      }
+      variants(first: 20) {
+        edges {
+          node {
+            id
+            title
+            availableForSale
+            price {
+              amount
+              currencyCode
+            }
+            selectedOptions {
+              name
+              value
+            }
+          }
         }
       }
     }
@@ -358,4 +506,139 @@ export async function getMerchProducts(
   }
 
   return data.products.edges.map(({ node }) => normalizeProduct(node, domain));
+}
+
+type CollectionNode = {
+  id: string;
+  handle: string;
+  title: string;
+  description: string;
+  seo: { title: string | null; description: string | null };
+};
+
+function normalizeCollection(node: CollectionNode): ShopifyCollection {
+  return {
+    id: node.id,
+    handle: node.handle,
+    title: node.title,
+    description: node.description,
+    seoTitle: node.seo.title,
+    seoDescription: node.seo.description,
+  };
+}
+
+/** Every collection the token can see, alphabetical, `frontpage` included. */
+export async function getCollections(): Promise<ShopifyCollection[] | null> {
+  const data = await storefront<{
+    collections: { edges: Array<{ node: CollectionNode }> };
+  }>(COLLECTIONS_QUERY, {
+    next: { revalidate: 600, tags: ["merch"] },
+  });
+
+  if (!data) {
+    return null;
+  }
+
+  return data.collections.edges.map(({ node }) => normalizeCollection(node));
+}
+
+/** `null` means the handle does not exist, or the shop is unreachable. */
+export async function getCollection(handle: string): Promise<{
+  collection: ShopifyCollection;
+  products: ShopifyProduct[];
+} | null> {
+  const domain = process.env.SHOPIFY_STORE_DOMAIN;
+
+  if (!domain) {
+    return null;
+  }
+
+  const data = await storefront<{
+    collection:
+      | (CollectionNode & {
+          products: { edges: Array<{ node: ProductNode }> };
+        })
+      | null;
+  }>(COLLECTION_QUERY, {
+    variables: { handle },
+    next: { revalidate: 600, tags: ["merch"] },
+  });
+
+  if (!data?.collection) {
+    return null;
+  }
+
+  return {
+    collection: normalizeCollection(data.collection),
+    products: data.collection.products.edges.map(({ node }) =>
+      normalizeProduct(node, domain),
+    ),
+  };
+}
+
+/** The whole catalogue for `/merch`. 100 is far above the real inventory. */
+export async function getAllProducts(
+  first = 100,
+): Promise<ShopifyProduct[] | null> {
+  const domain = process.env.SHOPIFY_STORE_DOMAIN;
+
+  if (!domain) {
+    return null;
+  }
+
+  const data = await storefront<StorefrontResponse>(ALL_PRODUCTS_QUERY, {
+    variables: { first },
+    next: { revalidate: 600, tags: ["merch"] },
+  });
+
+  if (!data) {
+    return null;
+  }
+
+  return data.products.edges.map(({ node }) => normalizeProduct(node, domain));
+}
+
+/**
+ * `null` means the handle does not exist, or the shop is unreachable — the
+ * API answers a missing handle with `product: null` and no error, so the two
+ * cases are indistinguishable here and both end in a 404.
+ */
+export async function getProduct(
+  handle: string,
+): Promise<ShopifyProductDetail | null> {
+  const domain = process.env.SHOPIFY_STORE_DOMAIN;
+
+  if (!domain) {
+    return null;
+  }
+
+  const data = await storefront<{
+    product:
+      | (ProductNode & {
+          description: string;
+          descriptionHtml: string;
+          seo: { title: string | null; description: string | null };
+        })
+      | null;
+  }>(PRODUCT_QUERY, {
+    variables: { handle },
+    next: { revalidate: 600, tags: ["merch"] },
+  });
+
+  if (!data?.product) {
+    return null;
+  }
+
+  const node = data.product;
+
+  return {
+    ...normalizeProduct(node, domain),
+    description: node.description,
+    descriptionHtml: node.descriptionHtml,
+    seoTitle: node.seo.title,
+    seoDescription: node.seo.description,
+    images: node.images.edges.map(({ node: image }) =>
+      normalizeImage(image, node.title),
+    ),
+  };
 }
