@@ -11,6 +11,8 @@ function product(): ShopifyProduct {
     handle: "test-t-shirt",
     url: "https://example.myshopify.com/products/test-t-shirt",
     price: "250 kr",
+    priceAmount: "250.0",
+    currencyCode: "SEK",
     available: true,
     image: null,
     hoverImage: null,

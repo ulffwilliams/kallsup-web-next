@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import MobileMenu from "./MobileMenu";
 import { useCart } from "./CartProvider";
 import { nav, socials, site } from "../_lib/site";
@@ -39,18 +40,18 @@ function SiteHeader() {
             className="hidden flex-1 md:flex md:gap-7"
           >
             {nav.map((item) => (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
-                className={`link-nav ${item.href === "#live" ? "uppercase" : ""}`}
+                className={`link-nav ${item.href === "/#live" ? "uppercase" : ""}`}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
-          <a
-            href="#top"
+          <Link
+            href="/#top"
             aria-label={`${site.name} — till toppen`}
             className="logo-shell shrink-0"
           >
@@ -64,7 +65,7 @@ function SiteHeader() {
               className="logo-mark h-7 w-auto transition-[height] duration-300 md:h-8"
             />
             <span className="logo-glow-layer" aria-hidden="true" />
-          </a>
+          </Link>
 
           <div className="flex flex-1 items-center justify-end gap-5">
             <div className="hidden items-center gap-4 md:flex">

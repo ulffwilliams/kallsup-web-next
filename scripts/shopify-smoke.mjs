@@ -95,6 +95,35 @@ const CART_CREATE = `
   }
 `;
 
+const COLLECTIONS = `
+  query Smoke($country: CountryCode!) @inContext(country: $country) {
+    collections(first: 20, sortKey: TITLE) {
+      edges {
+        node {
+          handle
+          title
+          description
+          seo { title description }
+        }
+      }
+    }
+  }
+`;
+
+const PRODUCT_BY_HANDLE = `
+  query Smoke($handle: String!, $country: CountryCode!)
+  @inContext(country: $country) {
+    product(handle: $handle) {
+      handle
+      description
+      descriptionHtml
+      seo { title description }
+      images(first: 10) { edges { node { url } } }
+      variants(first: 20) { edges { node { id } } }
+    }
+  }
+`;
+
 console.log(`Shopify smoke — ${domain} @ ${version}`);
 
 console.log("products");
@@ -144,6 +173,52 @@ if (variantId) {
   check("cart exposes a checkoutUrl", Boolean(cart?.checkoutUrl));
   check("cart totals the added line", cart?.totalQuantity === 1);
 }
+
+console.log("collections");
+const collectionData = await query({
+  query: COLLECTIONS,
+  variables: { country: "SE" },
+});
+const collections = collectionData.collections.edges.map((edge) => edge.node);
+const categories = collections.filter((node) => node.handle !== "frontpage");
+
+check(
+  "the store exposes at least one category collection",
+  categories.length > 0,
+);
+check(
+  "categories are sorted alphabetically by title",
+  categories
+    .map((node) => node.title)
+    .every((title, index, all) => index === 0 || all[index - 1] <= title),
+);
+check(
+  "every category has a description to use as its meta description",
+  categories.every((node) => typeof node.description === "string"),
+);
+
+console.log("product by handle");
+const detail = await query({
+  query: PRODUCT_BY_HANDLE,
+  variables: { handle: product.handle, country: "SE" },
+});
+
+check("product(handle:) resolves the grid's handle", Boolean(detail.product));
+check(
+  "product exposes descriptionHtml for the product page",
+  typeof detail.product?.descriptionHtml === "string",
+);
+check("product exposes a gallery", Array.isArray(detail.product?.images?.edges));
+
+const missing = await query({
+  query: PRODUCT_BY_HANDLE,
+  variables: { handle: "den-har-finns-inte-alls", country: "SE" },
+});
+
+check(
+  "an unknown handle answers null rather than an error",
+  missing.product === null,
+);
 
 if (failures.length > 0) {
   console.error(`\n${failures.length} check(s) failed.`);
