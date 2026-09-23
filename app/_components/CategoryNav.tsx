@@ -17,33 +17,35 @@ function CategoryNav({ categories, current }: CategoryNavProps) {
     return null;
   }
 
-  const chip = (active: boolean) =>
-    `type-label border px-3 py-1 transition-colors ${
-      active
-        ? "border-kall-cream text-kall-cream"
-        : "border-kall-700 text-kall-500 hover:border-kall-600 hover:text-kall-300"
-    }`;
-
   return (
-    <nav aria-label="Produktkategorier" className="mb-10 flex flex-wrap gap-2">
+    <nav
+      aria-label="Produktkategorier"
+      className="mb-10 flex flex-wrap gap-x-7 gap-y-3"
+    >
       <Link
         href="/merch"
         aria-current={current ? undefined : "page"}
-        className={chip(!current)}
+        data-active={current ? undefined : "true"}
+        className="link-nav link-underline"
       >
         Alla
       </Link>
 
-      {categories.map((category) => (
-        <Link
-          key={category.handle}
-          href={`/merch/kategori/${category.handle}`}
-          aria-current={current === category.handle ? "page" : undefined}
-          className={chip(current === category.handle)}
-        >
-          {category.title}
-        </Link>
-      ))}
+      {categories.map((category) => {
+        const active = current === category.handle;
+
+        return (
+          <Link
+            key={category.handle}
+            href={`/merch/kategori/${category.handle}`}
+            aria-current={active ? "page" : undefined}
+            data-active={active ? "true" : undefined}
+            className="link-nav link-underline"
+          >
+            {category.title}
+          </Link>
+        );
+      })}
     </nav>
   );
 }
