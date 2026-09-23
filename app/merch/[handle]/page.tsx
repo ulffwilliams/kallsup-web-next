@@ -81,11 +81,15 @@ export default async function ProductPage({ params }: PageProps) {
     <section className="section-y pt-32 md:pt-40">
       <div className="shell">
         <Reveal>
-          <nav aria-label="Brödsmulor" className="type-label mb-8">
-            <Link href="/merch" className="hover:text-kall-cream">
+          <nav aria-label="Brödsmulor" className="type-label mb-8 text-kall-cream">
+            {/* Everything is cream now, so the link needs its own hover tell —
+                otherwise nothing distinguishes it from the current page. */}
+            <Link href="/merch" className="transition-colors hover:text-kall-gold">
               Merch
             </Link>
-            <span aria-hidden="true"> / </span>
+            <span aria-hidden="true" className="text-kall-600">
+              {" / "}
+            </span>
             <span>{product.title}</span>
           </nav>
         </Reveal>
