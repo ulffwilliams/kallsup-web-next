@@ -51,6 +51,9 @@ export type ShopifyProduct = {
   url: string;
   /** Lowest variant price, already formatted for display. */
   price: string;
+  /** Raw lowest amount, e.g. "250.0". Formatted output lives in `price`. */
+  priceAmount: string;
+  currencyCode: string;
   available: boolean;
   image: ShopifyImage | null;
   /** Second product shot, used for the hover crossfade. */
@@ -97,64 +100,76 @@ type StorefrontResponse = {
 };
 
 /*
+ * The selection every product-shaped query shares. `quantityAvailable` is
+ * deliberately absent: the storefront token lacks
+ * `unauthenticated_read_product_inventory`, and the field answers with a
+ * GraphQL error rather than null, which would blank the whole response.
+ *
+ * `images(first: 2)` is all a grid card needs — the first shot plus the hover
+ * shot. The product page fetches its own gallery through `PRODUCT_QUERY`.
+ */
+const PRODUCT_FIELDS = /* GraphQL */ `
+  fragment ProductFields on Product {
+    id
+    title
+    handle
+    onlineStoreUrl
+    availableForSale
+    options {
+      name
+      optionValues {
+        name
+      }
+    }
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    images(first: 2) {
+      edges {
+        node {
+          url
+          altText
+          width
+          height
+        }
+      }
+    }
+    variants(first: 20) {
+      edges {
+        node {
+          id
+          title
+          availableForSale
+          price {
+            amount
+            currencyCode
+          }
+          selectedOptions {
+            name
+            value
+          }
+        }
+      }
+    }
+  }
+`;
+
+/*
  * @inContext pins the market so prices resolve in the Swedish market's currency
  * even if the store later sells in several. Without it, Shopify picks the
  * context from the *server's* location, which on Vercel is not Sweden.
- *
- * `quantityAvailable` is deliberately absent: the storefront token lacks
- * `unauthenticated_read_product_inventory`, and the field answers with a
- * GraphQL error rather than null, which would blank the entire section.
  */
 const PRODUCTS_QUERY = /* GraphQL */ `
+  ${PRODUCT_FIELDS}
   query MerchProducts($first: Int!, $country: CountryCode!)
   @inContext(country: $country) {
     products(first: $first, sortKey: BEST_SELLING) {
       edges {
         node {
-          id
-          title
-          handle
-          onlineStoreUrl
-          availableForSale
-          options {
-            name
-            optionValues {
-              name
-            }
-          }
-          priceRange {
-            minVariantPrice {
-              amount
-              currencyCode
-            }
-          }
-          images(first: 2) {
-            edges {
-              node {
-                url
-                altText
-                width
-                height
-              }
-            }
-          }
-          variants(first: 20) {
-            edges {
-              node {
-                id
-                title
-                availableForSale
-                price {
-                  amount
-                  currencyCode
-                }
-                selectedOptions {
-                  name
-                  value
-                }
-              }
-            }
-          }
+          ...ProductFields
         }
       }
     }
@@ -297,6 +312,8 @@ export function normalizeProduct(
       node.priceRange.minVariantPrice.amount,
       node.priceRange.minVariantPrice.currencyCode,
     ),
+    priceAmount: node.priceRange.minVariantPrice.amount,
+    currencyCode: node.priceRange.minVariantPrice.currencyCode,
     available: node.availableForSale,
     image: first ? normalizeImage(first.node, node.title) : null,
     hoverImage: second ? normalizeImage(second.node, "") : null,

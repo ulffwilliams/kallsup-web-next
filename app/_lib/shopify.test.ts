@@ -105,3 +105,10 @@ test("exposes option groups in the order the store defines them", () => {
     { name: "Storlek", values: ["S", "M", "L"] },
   ]);
 });
+
+test("carries the raw price amount and currency for structured data", () => {
+  const product = normalizeProduct(NODE, "example.myshopify.com");
+
+  assert.equal(product.priceAmount, "250.0");
+  assert.equal(product.currencyCode, "SEK");
+});
