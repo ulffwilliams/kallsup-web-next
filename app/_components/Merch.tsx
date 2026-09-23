@@ -23,9 +23,23 @@ async function Merch() {
 
           {products && products.length > 0 && (
             <p className="mt-10">
-              <Link href="/merch" className="btn">
+              <Link href="/merch" className="btn btn-bare">
                 Se all merch
-                <span className="btn-arrow">→</span>
+                {/* An SVG, not a "→" glyph: .btn-arrow sizes its child to
+                    0.65em square, which a text arrow's line box overflows —
+                    that is what threw the old one off centre. */}
+                <svg
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinecap="square"
+                  className="btn-arrow btn-arrow-forward"
+                  aria-hidden="true"
+                >
+                  <path d="M1.4 5H8.2" />
+                  <path d="M5.6 2.4 8.2 5 5.6 7.6" />
+                </svg>
               </Link>
             </p>
           )}

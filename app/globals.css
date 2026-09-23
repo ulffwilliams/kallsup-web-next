@@ -253,6 +253,28 @@ h6 {
   .btn:focus-visible .btn-arrow {
     transform: translate(1.5px, -1.5px);
   }
+
+  /* Internal "go deeper" arrow. Travels along the reading direction instead of
+     .btn-arrow's outbound diagonal, because the destination is still this
+     site. Declared after that rule so it wins at equal specificity. */
+  .btn:hover .btn-arrow-forward,
+  .btn:focus-visible .btn-arrow-forward {
+    transform: translateX(2.5px);
+  }
+
+  /* Borderless variant for a link that continues the page rather than
+     competing with it. The rule and the inset padding would make it read as a
+     second primary action next to the grid, so both go; hover moves to gold
+     since there is no longer a box to fill. */
+  .btn-bare {
+    border-color: transparent;
+    padding-inline: 0;
+  }
+  .btn-bare:hover {
+    background: transparent;
+    border-color: transparent;
+    color: var(--color-kall-gold);
+  }
 }
 
 
