@@ -42,7 +42,7 @@ function SiteHeader() {
               <a
                 key={item.href}
                 href={item.href}
-                className={`link-nav ${item.href === "#live" ? "uppercase" : ""}`}
+                className={`link-nav ${item.href === "/#live" ? "uppercase" : ""}`}
               >
                 {item.label}
               </a>
@@ -50,7 +50,7 @@ function SiteHeader() {
           </nav>
 
           <a
-            href="#top"
+            href="/#top"
             aria-label={`${site.name} — till toppen`}
             className="logo-shell shrink-0"
           >

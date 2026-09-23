@@ -7,11 +7,14 @@ export const site = {
   photoCredit: "Miranda Fredriksson",
 } as const;
 
+/* Root-relative so the anchors resolve from /merch and the product pages too;
+   a bare "#live" points at nothing outside the front page. Merch is now a
+   page of its own rather than a section link. */
 export const nav = [
-  { href: "#live", label: "Live" },
-  { href: "#musik", label: "Musik" },
-  { href: "#merch", label: "Merch" },
-  { href: "#kontakt", label: "Kontakt" },
+  { href: "/#live", label: "Live" },
+  { href: "/#musik", label: "Musik" },
+  { href: "/merch", label: "Merch" },
+  { href: "/#kontakt", label: "Kontakt" },
 ] as const;
 
 export const socials = [
