@@ -133,10 +133,13 @@ function CartDrawer() {
 
         {cart && lines.length > 0 && (
           <div className="border-t border-kall-700 px-6 py-5">
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-2 flex items-center justify-between">
               <span className="type-label uppercase">Delsumma</span>
               <span className="type-label">{cart.subtotal}</span>
             </div>
+            {/* Shopify calculates shipping at checkout from the delivery
+                address, so the drawer can only ever show the goods total. */}
+            <p className="type-label mb-4">Frakt tillkommer i kassan.</p>
             <a
               href={cart.checkoutUrl}
               className="btn btn-solid w-full justify-center"
