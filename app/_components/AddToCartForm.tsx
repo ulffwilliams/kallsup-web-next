@@ -205,10 +205,15 @@ function AddToCartForm({ product, mode = "detail" }: AddToCartFormProps) {
                 type="button"
                 disabled={!available || isPending}
                 onClick={() => variant && void addVariant(variant.id)}
-                className={`${CHIP_BASE} ${CHIP_IDLE} flex-1 ${
+                /* Same `btn btn-solid` the primary button wears, so the row
+                   reads as that button splitting apart rather than as a
+                   different control appearing. `px-2` narrows it enough for
+                   five sizes to fit a card column; the height comes from
+                   .btn's own vertical padding and stays identical. */
+                className={`btn btn-solid flex-1 justify-center px-2 ${
                   available
-                    ? "hover:border-kall-cream hover:text-kall-cream"
-                    : "cursor-not-allowed line-through opacity-40"
+                    ? ""
+                    : "cursor-not-allowed line-through opacity-40 hover:bg-kall-cream"
                 }`}
               >
                 {value}
