@@ -136,6 +136,17 @@ h6 {
     letter-spacing: 0.06em;
     color: var(--color-kall-300);
   }
+
+  /* Price on a product page. The label role is 11px of muted kall-500 — right
+     for dates and catalogue numbers, wrong for the one number a buyer is
+     actually looking for. */
+  .type-price {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    letter-spacing: 0.04em;
+    color: var(--color-kall-cream);
+    line-height: 1.2;
+  }
 }
 
 /* ---------------------------------------------------------------------------

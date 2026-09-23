@@ -117,7 +117,7 @@ export default async function ProductPage({ params }: PageProps) {
 
           <div className="md:sticky md:top-28 md:self-start">
             <h1 className="type-huge mb-4 text-kall-cream">{product.title}</h1>
-            <p className="type-label mb-6">{product.price}</p>
+            <p className="type-price mb-8">{product.price}</p>
 
             <AddToCartForm product={product} />
 
