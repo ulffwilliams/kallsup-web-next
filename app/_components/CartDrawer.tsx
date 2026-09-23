@@ -76,7 +76,7 @@ function CartDrawer() {
         </div>
 
         {lines.length === 0 ? (
-          <p className="type-label px-6 py-8">Korgen är tom.</p>
+          <p className="type-label px-6 py-8">Varukorgen är tom.</p>
         ) : (
           <ul className="flex-1 overflow-y-auto px-6 py-4">
             {lines.map((line) => (

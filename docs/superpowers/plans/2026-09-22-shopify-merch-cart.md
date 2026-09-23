@@ -36,24 +36,24 @@ SHOPIFY_STOREFRONT_ACCESS_TOKEN=<32 hex chars>
 
 ## File structure
 
-| File | Responsibility |
-| --- | --- |
-| `app/_lib/shopify.ts` (modify) | Storefront transport + product queries and normalization |
-| `app/_lib/shopify.test.ts` (create) | Unit tests for product normalization and price formatting |
-| `app/_lib/variants.ts` (create) | Pure, client-safe variant/option resolution |
-| `app/_lib/variants.test.ts` (create) | Unit tests for variant resolution |
-| `app/_lib/cart.ts` (create) | Cart GraphQL operations + cart normalization |
-| `app/_lib/cart.test.ts` (create) | Unit tests for cart normalization |
-| `app/_lib/cart-actions.ts` (create) | Server actions + cart cookie lifecycle |
-| `app/_components/CartProvider.tsx` (create) | Client cart context and drawer open state |
-| `app/_components/CartDrawer.tsx` (create) | Slide-over cart UI, checkout handoff |
-| `app/_components/MerchCard.tsx` (create) | One product card: option chips + add to cart |
-| `app/_components/Merch.tsx` (modify) | Server component: fetch products, render grid |
-| `app/_components/SiteHeader.tsx` (modify) | Cart trigger button with quantity badge |
-| `app/layout.tsx` (modify) | Mount `CartProvider` + `CartDrawer` |
-| `app/_lib/merch.ts` (delete) | Hardcoded Bandcamp items, no longer used |
-| `scripts/shopify-smoke.mjs` (create) | Live API shape assertions |
-| `package.json` (modify) | `test` and `smoke` scripts |
+| File                                        | Responsibility                                            |
+| ------------------------------------------- | --------------------------------------------------------- |
+| `app/_lib/shopify.ts` (modify)              | Storefront transport + product queries and normalization  |
+| `app/_lib/shopify.test.ts` (create)         | Unit tests for product normalization and price formatting |
+| `app/_lib/variants.ts` (create)             | Pure, client-safe variant/option resolution               |
+| `app/_lib/variants.test.ts` (create)        | Unit tests for variant resolution                         |
+| `app/_lib/cart.ts` (create)                 | Cart GraphQL operations + cart normalization              |
+| `app/_lib/cart.test.ts` (create)            | Unit tests for cart normalization                         |
+| `app/_lib/cart-actions.ts` (create)         | Server actions + cart cookie lifecycle                    |
+| `app/_components/CartProvider.tsx` (create) | Client cart context and drawer open state                 |
+| `app/_components/CartDrawer.tsx` (create)   | Slide-over cart UI, checkout handoff                      |
+| `app/_components/MerchCard.tsx` (create)    | One product card: option chips + add to cart              |
+| `app/_components/Merch.tsx` (modify)        | Server component: fetch products, render grid             |
+| `app/_components/SiteHeader.tsx` (modify)   | Cart trigger button with quantity badge                   |
+| `app/layout.tsx` (modify)                   | Mount `CartProvider` + `CartDrawer`                       |
+| `app/_lib/merch.ts` (delete)                | Hardcoded Bandcamp items, no longer used                  |
+| `scripts/shopify-smoke.mjs` (create)        | Live API shape assertions                                 |
+| `package.json` (modify)                     | `test` and `smoke` scripts                                |
 
 ---
 
@@ -62,6 +62,7 @@ SHOPIFY_STOREFRONT_ACCESS_TOKEN=<32 hex chars>
 Pure refactor. `getMerchProducts` keeps its current behaviour; the fetch, auth, and error plumbing move into a helper that cart operations will reuse.
 
 **Files:**
+
 - Modify: `app/_lib/shopify.ts`
 
 - [ ] **Step 1: Add the transport helper**
@@ -251,6 +252,7 @@ git commit -m "refactor: extract storefront transport helper from getMerchProduc
 ## Task 2: Query variants, options, and a second image
 
 **Files:**
+
 - Modify: `app/_lib/shopify.ts`
 - Create: `app/_lib/shopify.test.ts`
 - Modify: `package.json`
@@ -603,6 +605,7 @@ git commit -m "feat: query Shopify variants, option groups and hover image"
 ## Task 3: Client-safe variant resolution
 
 **Files:**
+
 - Create: `app/_lib/variants.ts`
 - Create: `app/_lib/variants.test.ts`
 
@@ -637,21 +640,21 @@ function product(): ShopifyProduct {
         title: "S / Svart",
         available: false,
         price: "250 kr",
-        options: { Storlek: "S", "Färg": "Svart" },
+        options: { Storlek: "S", Färg: "Svart" },
       },
       {
         id: "v2",
         title: "S / Vit",
         available: true,
         price: "250 kr",
-        options: { Storlek: "S", "Färg": "Vit" },
+        options: { Storlek: "S", Färg: "Vit" },
       },
       {
         id: "v3",
         title: "M / Svart",
         available: true,
         price: "250 kr",
-        options: { Storlek: "M", "Färg": "Svart" },
+        options: { Storlek: "M", Färg: "Svart" },
       },
     ],
   };
@@ -660,7 +663,7 @@ function product(): ShopifyProduct {
 test("defaults to the first purchasable variant, not the first listed", () => {
   assert.deepEqual(defaultSelection(product()), {
     Storlek: "S",
-    "Färg": "Vit",
+    Färg: "Vit",
   });
 });
 
@@ -673,7 +676,7 @@ test("falls back to the first variant when everything is sold out", () => {
 
   assert.deepEqual(defaultSelection(soldOut), {
     Storlek: "S",
-    "Färg": "Svart",
+    Färg: "Svart",
   });
 });
 
@@ -686,24 +689,24 @@ test("returns an empty selection for a product with no variants", () => {
 
 test("finds the variant matching every selected option", () => {
   assert.equal(
-    findVariant(product(), { Storlek: "M", "Färg": "Svart" })?.id,
+    findVariant(product(), { Storlek: "M", Färg: "Svart" })?.id,
     "v3",
   );
 });
 
 test("returns null when the combination does not exist", () => {
-  assert.equal(findVariant(product(), { Storlek: "M", "Färg": "Vit" }), null);
+  assert.equal(findVariant(product(), { Storlek: "M", Färg: "Vit" }), null);
 });
 
 test("reports a value as available only when some purchasable variant keeps the other selections", () => {
   const p = product();
 
   // With Färg=Svart selected, only M is purchasable (S/Svart is sold out).
-  assert.equal(isValueAvailable(p, "Storlek", "M", { "Färg": "Svart" }), true);
-  assert.equal(isValueAvailable(p, "Storlek", "S", { "Färg": "Svart" }), false);
+  assert.equal(isValueAvailable(p, "Storlek", "M", { Färg: "Svart" }), true);
+  assert.equal(isValueAvailable(p, "Storlek", "S", { Färg: "Svart" }), false);
   // With Färg=Vit selected, only S exists.
-  assert.equal(isValueAvailable(p, "Storlek", "S", { "Färg": "Vit" }), true);
-  assert.equal(isValueAvailable(p, "Storlek", "M", { "Färg": "Vit" }), false);
+  assert.equal(isValueAvailable(p, "Storlek", "S", { Färg: "Vit" }), true);
+  assert.equal(isValueAvailable(p, "Storlek", "M", { Färg: "Vit" }), false);
 });
 ```
 
@@ -794,6 +797,7 @@ git commit -m "feat: add client-safe variant resolution helpers"
 ## Task 4: Cart operations and normalization
 
 **Files:**
+
 - Create: `app/_lib/cart.ts`
 - Create: `app/_lib/cart.test.ts`
 
@@ -809,7 +813,8 @@ import { normalizeCart } from "./cart.ts";
 
 const CART_NODE = {
   id: "gid://shopify/Cart/hWNH7LYCO8K8SoHbr0RNgTHq?key=6174cfd4273552ad51c704a2b65727bc",
-  checkoutUrl: "https://05h8cn-0j.myshopify.com/cart/c/hWNH7LYCO8K8SoHbr0RNgTHq?key=Qp7b",
+  checkoutUrl:
+    "https://05h8cn-0j.myshopify.com/cart/c/hWNH7LYCO8K8SoHbr0RNgTHq?key=Qp7b",
   totalQuantity: 2,
   cost: {
     subtotalAmount: { amount: "500.0", currencyCode: "SEK" },
@@ -1249,6 +1254,7 @@ git commit -m "feat: add Storefront cart operations and normalization"
 ## Task 5: Server actions and the cart cookie
 
 **Files:**
+
 - Create: `app/_lib/cart-actions.ts`
 
 - [ ] **Step 1: Write the implementation**
@@ -1393,6 +1399,7 @@ git commit -m "feat: add cart server actions backed by an httpOnly cookie"
 ## Task 6: Cart context provider
 
 **Files:**
+
 - Create: `app/_components/CartProvider.tsx`
 - Modify: `app/layout.tsx`
 
@@ -1520,7 +1527,16 @@ function CartProvider({ shopEnabled, children }: CartProviderProps) {
       add,
       setQuantity,
     }),
-    [cart, shopEnabled, isPending, isOpen, openCart, closeCart, add, setQuantity],
+    [
+      cart,
+      shopEnabled,
+      isPending,
+      isOpen,
+      openCart,
+      closeCart,
+      add,
+      setQuantity,
+    ],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
@@ -1541,13 +1557,11 @@ import { isShopifyConfigured } from "./_lib/shopify";
 Replace the `<body>` contents:
 
 ```tsx
-      <body className="antialiased min-w-xs">
-        <CartProvider shopEnabled={isShopifyConfigured()}>
-          {children}
-        </CartProvider>
-        <Analytics />
-        <SpeedInsights />
-      </body>
+<body className="antialiased min-w-xs">
+  <CartProvider shopEnabled={isShopifyConfigured()}>{children}</CartProvider>
+  <Analytics />
+  <SpeedInsights />
+</body>
 ```
 
 `layout.tsx` is a server component, so it can call `isShopifyConfigured()` and pass the boolean across the boundary. Task 8 adds `<CartDrawer />` inside the provider.
@@ -1569,6 +1583,7 @@ git commit -m "feat: add cart context provider and mount it in the layout"
 ## Task 7: Product card with option chips
 
 **Files:**
+
 - Create: `app/_components/MerchCard.tsx`
 
 - [ ] **Step 1: Write the card**
@@ -1582,7 +1597,11 @@ import { useState } from "react";
 import Image from "next/image";
 
 import { useCart } from "./CartProvider";
-import { defaultSelection, findVariant, isValueAvailable } from "../_lib/variants";
+import {
+  defaultSelection,
+  findVariant,
+  isValueAvailable,
+} from "../_lib/variants";
 import type { Selection } from "../_lib/variants";
 import type { ShopifyProduct } from "../_lib/shopify";
 
@@ -1736,6 +1755,7 @@ git commit -m "feat: add merch card with option chips and add-to-cart"
 ## Task 8: Wire the Merch section to Shopify
 
 **Files:**
+
 - Modify: `app/_components/Merch.tsx`
 - Delete: `app/_lib/merch.ts`
 
@@ -1814,6 +1834,7 @@ git commit -m "feat: render merch section from Shopify instead of hardcoded item
 ## Task 9: Cart drawer
 
 **Files:**
+
 - Create: `app/_components/CartDrawer.tsx`
 - Modify: `app/layout.tsx`
 
@@ -1890,17 +1911,24 @@ function CartDrawer() {
       >
         <div className="flex items-center justify-between border-b border-kall-700 px-6 py-5">
           <h2 className="type-label uppercase">Varukorg</h2>
-          <button type="button" onClick={closeCart} className="type-label text-kall-cream">
+          <button
+            type="button"
+            onClick={closeCart}
+            className="type-label text-kall-cream"
+          >
             Stäng
           </button>
         </div>
 
         {lines.length === 0 ? (
-          <p className="type-label px-6 py-8">Korgen är tom.</p>
+          <p className="type-label px-6 py-8">Varukorgen är tom.</p>
         ) : (
           <ul className="flex-1 overflow-y-auto px-6 py-4">
             {lines.map((line) => (
-              <li key={line.id} className="flex gap-4 border-b border-kall-800 py-4">
+              <li
+                key={line.id}
+                className="flex gap-4 border-b border-kall-800 py-4"
+              >
                 {line.image && (
                   <div className="relative size-16 shrink-0 overflow-hidden bg-kall-800">
                     <Image
@@ -1954,7 +1982,10 @@ function CartDrawer() {
               <span className="type-label uppercase">Delsumma</span>
               <span className="type-label">{cart.subtotal}</span>
             </div>
-            <a href={cart.checkoutUrl} className="btn btn-solid w-full justify-center">
+            <a
+              href={cart.checkoutUrl}
+              className="btn btn-solid w-full justify-center"
+            >
               Till kassan
             </a>
           </div>
@@ -1980,10 +2011,10 @@ import CartDrawer from "./_components/CartDrawer";
 and place it inside the provider, after `{children}`:
 
 ```tsx
-        <CartProvider shopEnabled={isShopifyConfigured()}>
-          {children}
-          <CartDrawer />
-        </CartProvider>
+<CartProvider shopEnabled={isShopifyConfigured()}>
+  {children}
+  <CartDrawer />
+</CartProvider>
 ```
 
 - [ ] **Step 3: Verify**
@@ -2003,6 +2034,7 @@ git commit -m "feat: add cart drawer with quantity stepper and checkout handoff"
 ## Task 10: Header cart trigger
 
 **Files:**
+
 - Modify: `app/_components/SiteHeader.tsx`
 
 - [ ] **Step 1: Import the hook**
@@ -2018,7 +2050,7 @@ import { useCart } from "./CartProvider";
 Directly below `const closeMenu = useCallback(() => setMenuOpen(false), []);` add:
 
 ```tsx
-  const { cart, shopEnabled, openCart } = useCart();
+const { cart, shopEnabled, openCart } = useCart();
 ```
 
 - [ ] **Step 3: Render the trigger**
@@ -2026,54 +2058,54 @@ Directly below `const closeMenu = useCallback(() => setMenuOpen(false), []);` ad
 In the right-hand cluster, insert the button before the existing "Meny" button, so the markup reads:
 
 ```tsx
-          <div className="flex flex-1 items-center justify-end gap-5">
-            <div className="hidden items-center gap-4 md:flex">
-              {socials.map((social) => (
-                <a
-                  key={social.href}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="social-img"
-                  aria-label={social.label}
-                >
-                  <Image
-                    src={social.icon}
-                    alt=""
-                    width={20}
-                    height={20}
-                    className="size-5"
-                  />
-                </a>
-              ))}
-            </div>
+<div className="flex flex-1 items-center justify-end gap-5">
+  <div className="hidden items-center gap-4 md:flex">
+    {socials.map((social) => (
+      <a
+        key={social.href}
+        href={social.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="social-img"
+        aria-label={social.label}
+      >
+        <Image
+          src={social.icon}
+          alt=""
+          width={20}
+          height={20}
+          className="size-5"
+        />
+      </a>
+    ))}
+  </div>
 
-            {shopEnabled && (
-              <button
-                type="button"
-                onClick={openCart}
-                aria-label={
-                  cart?.totalQuantity
-                    ? `Varukorg, ${cart.totalQuantity} varor`
-                    : "Varukorg"
-                }
-                className="type-label text-kall-cream"
-              >
-                Korg
-                {cart?.totalQuantity ? ` (${cart.totalQuantity})` : ""}
-              </button>
-            )}
+  {shopEnabled && (
+    <button
+      type="button"
+      onClick={openCart}
+      aria-label={
+        cart?.totalQuantity
+          ? `Varukorg, ${cart.totalQuantity} varor`
+          : "Varukorg"
+      }
+      className="type-label text-kall-cream"
+    >
+      Korg
+      {cart?.totalQuantity ? ` (${cart.totalQuantity})` : ""}
+    </button>
+  )}
 
-            <button
-              type="button"
-              onClick={() => setMenuOpen((open) => !open)}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-menu"
-              className="type-label text-kall-cream md:hidden"
-            >
-              {menuOpen ? "Stäng" : "Meny"}
-            </button>
-          </div>
+  <button
+    type="button"
+    onClick={() => setMenuOpen((open) => !open)}
+    aria-expanded={menuOpen}
+    aria-controls="mobile-menu"
+    className="type-label text-kall-cream md:hidden"
+  >
+    {menuOpen ? "Stäng" : "Meny"}
+  </button>
+</div>
 ```
 
 The trigger is visible at every breakpoint — a cart the visitor cannot reach on a phone is worse than no cart at all.
@@ -2095,6 +2127,7 @@ git commit -m "feat: add cart trigger with quantity badge to the header"
 ## Task 11: Live API smoke script
 
 **Files:**
+
 - Create: `scripts/shopify-smoke.mjs`
 - Modify: `package.json`
 
@@ -2137,14 +2170,17 @@ function check(label, condition) {
 }
 
 async function query(body) {
-  const response = await fetch(`https://${domain}/api/${version}/graphql.json`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": token,
+  const response = await fetch(
+    `https://${domain}/api/${version}/graphql.json`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": token,
+      },
+      body: JSON.stringify(body),
     },
-    body: JSON.stringify(body),
-  });
+  );
 
   if (!response.ok) {
     throw new Error(`HTTP ${response.status} ${response.statusText}`);
@@ -2153,9 +2189,7 @@ async function query(body) {
   const payload = await response.json();
 
   if (payload.errors?.length) {
-    throw new Error(
-      payload.errors.map((error) => error.message).join("; "),
-    );
+    throw new Error(payload.errors.map((error) => error.message).join("; "));
   }
 
   return payload.data;
@@ -2211,7 +2245,10 @@ const productData = await query({
 });
 const products = productData.products.edges.map((edge) => edge.node);
 
-check("at least one product is published to the token's channel", products.length > 0);
+check(
+  "at least one product is published to the token's channel",
+  products.length > 0,
+);
 
 const [product] = products;
 
@@ -2223,10 +2260,7 @@ if (product) {
 
   check("variant carries a global id", Boolean(variant?.id));
   check("variant carries a price amount", Boolean(variant?.price?.amount));
-  check(
-    "variant prices are in SEK",
-    variant?.price?.currencyCode === "SEK",
-  );
+  check("variant prices are in SEK", variant?.price?.currencyCode === "SEK");
   check(
     "variant exposes selectedOptions",
     Array.isArray(variant?.selectedOptions),
@@ -2247,7 +2281,10 @@ if (variantId) {
   const { cart, userErrors } = cartData.cartCreate;
 
   check("cartCreate returns no userErrors", userErrors.length === 0);
-  check("cart id carries its ?key= suffix", Boolean(cart?.id.includes("?key=")));
+  check(
+    "cart id carries its ?key= suffix",
+    Boolean(cart?.id.includes("?key=")),
+  );
   check("cart exposes a checkoutUrl", Boolean(cart?.checkoutUrl));
   check("cart totals the added line", cart?.totalQuantity === 1);
 }
@@ -2322,7 +2359,7 @@ Run: `npm run dev`, open `http://localhost:3000/#merch`, then confirm:
 3. Adding an in-stock size opens the drawer with that line.
 4. The header shows `Korg (1)`.
 5. The `+` and `−` steppers change the line total and the subtotal.
-6. Stepping down from 1 removes the line and the drawer shows "Korgen är tom".
+6. Stepping down from 1 removes the line and the drawer shows "Varuorgen är tom".
 7. Escape closes the drawer and focus returns to the trigger.
 8. Reloading the page keeps the cart contents — the cookie survived.
 9. "Till kassan" lands on the Shopify checkout with the right items.

@@ -137,7 +137,7 @@ down — that is how the client header learns whether a shop exists at all.
 
 Right-hand slide-over listing lines (thumbnail, title, variant, qty stepper,
 line price), subtotal, and a `btn btn-solid` "Till kassan" that assigns
-`window.location.href = cart.checkoutUrl`. Empty state: "Korgen är tom".
+`window.location.href = cart.checkoutUrl`. Empty state: "Varukorgen är tom".
 
 Accessibility and layering follow `MobileMenu.tsx`: body scroll lock, Escape to
 close, `aria-modal`, focus moved into the drawer on open and restored on close.
