@@ -87,12 +87,6 @@ export default async function CategoryPage({ params }: PageProps) {
                 current={collection.handle}
               />
 
-              {collection.description && (
-                <p className="type-meta mb-10 max-w-prose">
-                  {collection.description}
-                </p>
-              )}
-
               <MerchGrid
                 products={products}
                 emptyMessage="Inga produkter här just nu."
