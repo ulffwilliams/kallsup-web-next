@@ -18,6 +18,8 @@ export type Gig = {
    * ticketlink still renders one.
    */
   ticketsreleased: boolean;
+  /** True when the gig is sold out — the ticket CTA is replaced by an indicator. */
+  soldout: boolean;
 };
 
 /*
@@ -39,7 +41,8 @@ const SELECT_GIG = `
   note,
   ticketlink,
   to_char(ticketreleasedate, 'YYYY-MM-DD') AS ticketreleasedate,
-  (ticketreleasedate IS NULL OR ticketreleasedate <= ${TODAY}) AS ticketsreleased
+  (ticketreleasedate IS NULL OR ticketreleasedate <= ${TODAY}) AS ticketsreleased,
+  soldout
 `;
 
 export async function getUpcomingGigs(): Promise<Gig[]> {
