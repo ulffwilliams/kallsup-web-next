@@ -37,7 +37,11 @@ const CHIP_SELECTED = "border-kall-cream text-kall-cream";
  * would be nonsense.
  */
 function AddToCartForm({ product, mode = "detail" }: AddToCartFormProps) {
-  const { add, openCart, isPending } = useCart();
+  const { add, openCart } = useCart();
+  /* Local, not the provider's `isPending`: that flag is one shared transition,
+     so every card on the page would announce itself as busy the moment any one
+     of them was clicked. */
+  const [busy, setBusy] = useState(false);
   const [selection, setSelection] = useState<Selection>(() =>
     defaultSelection(product),
   );
@@ -98,8 +102,11 @@ function AddToCartForm({ product, mode = "detail" }: AddToCartFormProps) {
 
   const addVariant = async (variantId: string) => {
     setError(null);
+    setBusy(true);
 
     const message = await add(variantId);
+
+    setBusy(false);
 
     if (message) {
       setError(message);
@@ -203,7 +210,7 @@ function AddToCartForm({ product, mode = "detail" }: AddToCartFormProps) {
                 key={value}
                 ref={index === 0 ? firstChipRef : undefined}
                 type="button"
-                disabled={!available || isPending}
+                disabled={!available || busy}
                 onClick={() => variant && void addVariant(variant.id)}
                 /* Same `btn btn-solid` the primary button wears, so the row
                    reads as that button splitting apart rather than as a
@@ -225,7 +232,7 @@ function AddToCartForm({ product, mode = "detail" }: AddToCartFormProps) {
         <button
           type="button"
           onClick={onPrimaryClick}
-          disabled={(!expands && selectedSoldOut) || isPending}
+          disabled={(!expands && selectedSoldOut) || busy}
           aria-expanded={expands ? step === "choosing" : undefined}
           className="btn btn-solid mt-4 w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
         >
@@ -233,7 +240,7 @@ function AddToCartForm({ product, mode = "detail" }: AddToCartFormProps) {
             ? "Tillagd ✓"
             : !expands && selectedSoldOut
               ? "Slutsåld"
-              : isPending
+              : busy
                 ? "Lägger i varukorg…"
                 : "Lägg i varukorg"}
         </button>
