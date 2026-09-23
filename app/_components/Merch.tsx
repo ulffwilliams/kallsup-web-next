@@ -1,13 +1,14 @@
+import Link from "next/link";
+
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
-import MerchCard from "./MerchCard";
+import MerchGrid from "./MerchGrid";
 import { getMerchProducts } from "../_lib/shopify";
 
 /**
- * Merch. Products come from the Shopify Storefront API — see `_lib/shopify.ts`.
- * A failed or unconfigured shop and an empty catalogue look the same to a
- * visitor, and both mean the same thing, so they share one message. The cause
- * is in the server log either way.
+ * Merch on the front page: the eight best sellers, with the full catalogue a
+ * click away. Products come from the Shopify Storefront API — see
+ * `_lib/shopify.ts`.
  */
 async function Merch() {
   const products = await getMerchProducts();
@@ -18,16 +19,15 @@ async function Merch() {
         <SectionHeader title="Merch" />
 
         <Reveal>
-          {products && products.length > 0 ? (
-            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((product) => (
-                <li key={product.id}>
-                  <MerchCard product={product} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="type-label">Merch tillbaka snart.</p>
+          <MerchGrid products={products} />
+
+          {products && products.length > 0 && (
+            <p className="mt-10">
+              <Link href="/merch" className="btn">
+                Se all merch
+                <span className="btn-arrow">→</span>
+              </Link>
+            </p>
           )}
         </Reveal>
       </div>
