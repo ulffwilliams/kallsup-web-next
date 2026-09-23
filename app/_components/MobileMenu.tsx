@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { nav, socials} from "../_lib/site";
 
 type MobileMenuProps = {
@@ -42,7 +43,7 @@ function MobileMenu({ open, onClose }: MobileMenuProps) {
         <ul className="flex flex-col gap-2">
           {nav.map((item, index) => (
             <li key={item.href}>
-              <a
+              <Link
                 href={item.href}
                 onClick={onClose}
                 className="type-huge block py-1 text-kall-cream transition-colors hover:text-kall-gold"
@@ -51,7 +52,7 @@ function MobileMenu({ open, onClose }: MobileMenuProps) {
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 {item.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
