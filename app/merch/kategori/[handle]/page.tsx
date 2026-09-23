@@ -5,9 +5,6 @@ import SectionHeader from "../../../_components/SectionHeader";
 import Reveal from "../../../_components/Reveal";
 import MerchGrid from "../../../_components/MerchGrid";
 import CategoryNav from "../../../_components/CategoryNav";
-import SiteHeader from "../../../_components/SiteHeader";
-import SiteFooter from "../../../_components/SiteFooter";
-import Background from "../../../_components/Background";
 import { getCollection, getCollections } from "../../../_lib/shopify";
 import { filterCategories } from "../../../_lib/collections";
 import { metaDescription } from "../../../_lib/seo";
@@ -72,31 +69,19 @@ export default async function CategoryPage({ params }: PageProps) {
   const categories = filterCategories(collections ?? []);
 
   return (
-    <div className="relative isolate w-full">
-      <Background />
-      <SiteHeader />
+    <section className="section-y pt-32 md:pt-40">
+      <div className="shell">
+        <SectionHeader title={collection.title} />
 
-      <main id="main" className="relative z-10">
-        <section className="section-y pt-32 md:pt-40">
-          <div className="shell">
-            <SectionHeader title={collection.title} />
+        <Reveal>
+          <CategoryNav categories={categories} current={collection.handle} />
 
-            <Reveal>
-              <CategoryNav
-                categories={categories}
-                current={collection.handle}
-              />
-
-              <MerchGrid
-                products={products}
-                emptyMessage="Inga produkter här just nu."
-              />
-            </Reveal>
-          </div>
-        </section>
-      </main>
-
-      <SiteFooter />
-    </div>
+          <MerchGrid
+            products={products}
+            emptyMessage="Inga produkter här just nu."
+          />
+        </Reveal>
+      </div>
+    </section>
   );
 }

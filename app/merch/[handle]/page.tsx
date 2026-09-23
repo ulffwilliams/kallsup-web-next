@@ -5,9 +5,6 @@ import Link from "next/link";
 
 import AddToCartForm from "../../_components/AddToCartForm";
 import Reveal from "../../_components/Reveal";
-import SiteHeader from "../../_components/SiteHeader";
-import SiteFooter from "../../_components/SiteFooter";
-import Background from "../../_components/Background";
 import { getAllProducts, getProduct } from "../../_lib/shopify";
 import { metaDescription, productJsonLd } from "../../_lib/seo";
 
@@ -81,78 +78,65 @@ export default async function ProductPage({ params }: PageProps) {
   });
 
   return (
-    <div className="relative isolate w-full">
-      <Background />
-      <SiteHeader />
+    <section className="section-y pt-32 md:pt-40">
+      <div className="shell">
+        <Reveal>
+          <nav aria-label="Brödsmulor" className="type-label mb-8">
+            <Link href="/merch" className="hover:text-kall-cream">
+              Merch
+            </Link>
+            <span aria-hidden="true"> / </span>
+            <span>{product.title}</span>
+          </nav>
+        </Reveal>
 
-      <main id="main" className="relative z-10">
-        <section className="section-y pt-32 md:pt-40">
-          <div className="shell">
-            <Reveal>
-              <nav aria-label="Brödsmulor" className="type-label mb-8">
-                <Link href="/merch" className="hover:text-kall-cream">
-                  Merch
-                </Link>
-                <span aria-hidden="true"> / </span>
-                <span>{product.title}</span>
-              </nav>
-            </Reveal>
-
-            <Reveal className="grid gap-10 md:grid-cols-2 md:gap-14">
-              <div className="flex flex-col gap-4">
-                {product.images.length > 0 ? (
-                  product.images.map((image) => (
-                    <div
-                      key={image.url}
-                      className="relative aspect-square w-full overflow-hidden bg-kall-900/40"
-                    >
-                      <Image
-                        src={image.url}
-                        alt={image.alt}
-                        fill
-                        sizes="(max-width: 768px) 90vw, 45vw"
-                        className="object-cover"
-                      />
-                      <div className="grain-overlay" aria-hidden="true" />
-                    </div>
-                  ))
-                ) : (
-                  <div className="relative flex aspect-square w-full items-center justify-center border border-dashed border-kall-700 bg-kall-900/40">
-                    <span className="type-label uppercase">{product.title}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="md:sticky md:top-28 md:self-start">
-                <h1 className="type-huge mb-4 text-kall-cream">
-                  {product.title}
-                </h1>
-                <p className="type-label mb-6">{product.price}</p>
-
-                <AddToCartForm product={product} />
-
-                {product.descriptionHtml && (
-                  /* HTML authored in the Shopify admin, not by visitors, so
-                     this is not an injection surface. */
-                  <div
-                    className="type-meta mt-10 max-w-prose space-y-4"
-                    dangerouslySetInnerHTML={{
-                      __html: product.descriptionHtml,
-                    }}
+        <Reveal className="grid gap-10 md:grid-cols-2 md:gap-14">
+          <div className="flex flex-col gap-4">
+            {product.images.length > 0 ? (
+              product.images.map((image) => (
+                <div
+                  key={image.url}
+                  className="relative aspect-square w-full overflow-hidden bg-kall-900/40"
+                >
+                  <Image
+                    src={image.url}
+                    alt={image.alt}
+                    fill
+                    sizes="(max-width: 768px) 90vw, 45vw"
+                    className="object-cover"
                   />
-                )}
+                  <div className="grain-overlay" aria-hidden="true" />
+                </div>
+              ))
+            ) : (
+              <div className="relative flex aspect-square w-full items-center justify-center border border-dashed border-kall-700 bg-kall-900/40">
+                <span className="type-label uppercase">{product.title}</span>
               </div>
-            </Reveal>
+            )}
           </div>
-        </section>
-      </main>
 
-      <SiteFooter />
+          <div className="md:sticky md:top-28 md:self-start">
+            <h1 className="type-huge mb-4 text-kall-cream">{product.title}</h1>
+            <p className="type-label mb-6">{product.price}</p>
+
+            <AddToCartForm product={product} />
+
+            {product.descriptionHtml && (
+              /* HTML authored in the Shopify admin, not by visitors, so this
+                 is not an injection surface. */
+              <div
+                className="type-meta mt-10 max-w-prose space-y-4"
+                dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+              />
+            )}
+          </div>
+        </Reveal>
+      </div>
 
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-    </div>
+    </section>
   );
 }
