@@ -63,7 +63,12 @@ html,
 body {
   min-height: 100%;
   background: var(--color-kall-void);
-  overflow-x: hidden;
+  /* `clip`, not `hidden`. Setting one axis to `hidden` forces the other to
+     `auto`, which turns <html> into a scroll container — and every
+     `position: sticky` descendant then anchors to that instead of the
+     viewport and silently stops sticking. `clip` cuts the same horizontal
+     overflow without creating a scrollport. */
+  overflow-x: clip;
 }
 
 html {
