@@ -16,14 +16,29 @@ function SitePrivacyNotice() {
   return (
     <section
       aria-labelledby="kallsup-se-behandling"
-      className="policy-prose mt-16 max-w-prose border-t border-kall-700 pt-10"
+      className="policy-prose mb-14 max-w-prose border-b border-kall-700 pb-10"
     >
       <h2 id="kallsup-se-behandling">Behandling på kallsup.se</h2>
 
       <p>
-        Texten ovan beskriver behandlingen i vår Shopify-butik. Den här sidan,
-        kallsup.se, behandlar dessutom vissa uppgifter på egen hand. Nedan
-        framgår vilka.
+        Det här avsnittet gäller den här webbplatsen. Texten längre ned är vår
+        butikspolicy och beskriver behandlingen i Shopifys kassa, som ligger på
+        Shopifys egen domän.
+      </p>
+
+      <h2>Vad vi inte samlar in här</h2>
+      <p>
+        På kallsup.se lämnar du inga kontaktuppgifter och inga
+        betalningsuppgifter. Vi tar inte emot namn, adress, telefonnummer,
+        e-postadress, kortnummer eller kontouppgifter någonstans på den här
+        sidan. När du lägger något i varukorgen skickas enbart uppgift om
+        vilken artikel och vilket antal det gäller till Shopify.
+      </p>
+      <p>
+        Klickar du på <strong>Till kassan</strong> lämnar du kallsup.se och
+        fortsätter på Shopifys domän. Det är där du anger dina uppgifter och
+        betalar, och det är den behandlingen butikspolicyn nedan beskriver.
+        Inga kortuppgifter passerar våra servrar.
       </p>
 
       <h2>Personuppgiftsansvarig</h2>

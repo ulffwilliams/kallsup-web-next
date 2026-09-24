@@ -48,6 +48,8 @@ export default async function PolicyPage({ params }: PageProps) {
     notFound();
   }
 
+  const isPrivacy = slug === "integritetspolicy";
+
   return (
     <section className="section-y pt-32 md:pt-40">
       <div className="shell">
@@ -68,6 +70,19 @@ export default async function PolicyPage({ params }: PageProps) {
 
         <SectionHeader title={policy.title} />
 
+        {/* This site's own processing goes first. Shopify's policy lists
+            card numbers and contact details, which is true of its checkout and
+            false of kallsup.se — read in that order, a visitor would conclude
+            this page takes their card. */}
+        {isPrivacy && (
+          <>
+            <SitePrivacyNotice />
+            <h2 className="policy-prose mb-6 max-w-prose text-kall-cream">
+              Butikspolicy
+            </h2>
+          </>
+        )}
+
         {/* Deliberately not wrapped in Reveal: a fade-in on a document
             someone opened specifically to read is friction, and a legal text
             is the last thing that should depend on an observer firing.
@@ -80,10 +95,6 @@ export default async function PolicyPage({ params }: PageProps) {
           className="policy-prose max-w-prose"
           dangerouslySetInnerHTML={{ __html: policy.body }}
         />
-
-        {/* Shopify's text covers Shopify. What this site does on its own is
-            disclosed by the same controller, on the same page. */}
-        {slug === "integritetspolicy" && <SitePrivacyNotice />}
       </div>
     </section>
   );
