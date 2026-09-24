@@ -48,12 +48,25 @@ function CartDrawer() {
   const lines = cart?.lines ?? [];
 
   return (
-    <div hidden={!isOpen} className="fixed inset-0 z-[60]">
+    /* Stays mounted so the panel can slide out as well as in: `hidden` would
+       drop it before any transition ran. `invisible` flips at the end of the
+       closing transition (visibility steps, it does not fade) and `inert`
+       keeps the closed drawer out of the tab order and the accessibility tree. */
+    <div
+      inert={!isOpen}
+      className={`fixed inset-0 z-[60] transition-[visibility] duration-500 motion-reduce:duration-0 ${
+        isOpen ? "visible" : "invisible"
+      }`}
+    >
+      {/* Blur only, no tint — the page behind stays readable at its own
+          brightness, just out of focus. */}
       <button
         type="button"
         aria-label="Stäng korgen"
         onClick={closeCart}
-        className="absolute inset-0 h-full w-full bg-kall-void/80 backdrop-blur-sm"
+        className={`absolute inset-0 h-full w-full backdrop-blur-md transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+          isOpen ? "opacity-100" : "opacity-0"
+        }`}
       />
 
       <div
@@ -62,7 +75,9 @@ function CartDrawer() {
         aria-modal="true"
         aria-label="Varukorg"
         tabIndex={-1}
-        className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col border-l border-kall-700 bg-kall-900 outline-none"
+        className={`absolute inset-y-0 right-0 flex w-full max-w-sm flex-col border-l border-kall-700 bg-kall-900 shadow-[-24px_0_48px_-12px_rgb(0_0_0/0.5)] outline-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
       >
         <div className="flex items-center justify-between border-b border-kall-700 px-6 py-5">
           <h2 className="type-label uppercase">Varukorg</h2>
