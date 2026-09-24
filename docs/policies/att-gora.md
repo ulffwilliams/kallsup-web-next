@@ -51,9 +51,9 @@ dagar från ångermeddelandet, och att rea-undantaget är borta.
       > Personuppgiftsansvarig är Skärrad AB, organisationsnummer 559550-6444.
 
 - [ ] **Postadressen är borta.** Tidigare stod Åbylundsgatan 3, 702 32 Örebro
-      i policyn; nu finns ingen adress alls. Kontaktuppgifterna ska omfatta en
-      geografisk adress, inte bara e-post. Lägg tillbaka den adress som är
-      bolagets riktiga — se adressfrågan under användarvillkoren nedan.
+      i policyn, vilket var fel adress. Kontaktuppgifterna ska omfatta en
+      geografisk adress, inte bara e-post. Lägg in **Karlsgatan 12A** med
+      postnummer och ort, identiskt med användarvillkoren.
 
 - [ ] **IMY namnges inte.** Policyn hänvisar till "din lokala
       datatillsynsmyndighet" och länkar till en EES-lista. Korrekt men
@@ -96,10 +96,13 @@ Karlsgatan 12A
 SE559550644401
 ```
 
-- [ ] **Adressen saknar postnummer och ort.** Och den krockar med
-      integritetspolicyn, som tidigare angav Åbylundsgatan 3, 702 32 Örebro.
-      **Bestäm vilken adress som är bolagets och använd den i båda
-      dokumenten** — plus i sajtens footer.
+- [x] ~~Vilken adress gäller~~ — **Karlsgatan 12A** är bolagets adress.
+      Åbylundsgatan 3 i integritetspolicyn var fel och ska bort.
+
+- [ ] **Postnummer och ort saknas fortfarande.** "Karlsgatan 12A" ensamt
+      uppfyller inte e-handelslagens krav på geografisk adress. Komplettera
+      till formen `Karlsgatan 12A, NNN NN Örebro` och använd exakt samma
+      sträng i användarvillkoren, integritetspolicyn och sajtens footer.
 
 - [ ] **Telefonnumret ska formateras** `+46 73 816 24 89`.
 
@@ -144,8 +147,9 @@ SE559550644401
 
 ## Ordning att ta det i
 
-1. **Adressfrågan** — låser upp tre punkter på en gång: användarvillkoren,
-   integritetspolicyn och footern på sajten.
+1. **Postnummer och ort till Karlsgatan 12A** — låser upp tre punkter på en
+   gång: användarvillkoren, integritetspolicyn och footern på sajten. Vilken
+   gata det är avgjordes 2026-09-24; bara postnumret fattas.
 2. **Returpolicyns ARN-avsnitt** och **fraktpolicyns leveransområde** — två
    klipp och klistra.
 3. **Användarvillkoren** — avtalsparten och avsnitt 22 först, textfelen sist.
