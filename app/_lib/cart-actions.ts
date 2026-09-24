@@ -10,6 +10,7 @@
  * something they did not do.
  */
 import { cookies } from "next/headers";
+import { updateTag } from "next/cache";
 
 import {
   addCartLine,
@@ -65,9 +66,27 @@ export async function readCart(): Promise<Cart | null> {
   return cart;
 }
 
+/**
+ * A stale variant means the product pages are serving ids Shopify has since
+ * replaced. Expiring the `merch` tag makes the router's post-action refresh
+ * fetch fresh products, so the next click uses the new ids.
+ */
 export async function addToCart(
   variantId: string,
   quantity = 1,
+): Promise<CartResult> {
+  const result = await addOrCreate(variantId, quantity);
+
+  if ("error" in result && result.staleVariant) {
+    updateTag("merch");
+  }
+
+  return result;
+}
+
+async function addOrCreate(
+  variantId: string,
+  quantity: number,
 ): Promise<CartResult> {
   const cartId = await readCartId();
 

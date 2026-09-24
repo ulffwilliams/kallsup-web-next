@@ -42,9 +42,16 @@ function AddToCartForm({ product, mode = "detail" }: AddToCartFormProps) {
      so every card on the page would announce itself as busy the moment any one
      of them was clicked. */
   const [busy, setBusy] = useState(false);
-  const [selection, setSelection] = useState<Selection>(() =>
+  const [chosen, setChosen] = useState<Selection>(() =>
     defaultSelection(product),
   );
+  /* A choice that matches no variant means the product changed underneath us
+     — the stale-variant refresh after an add swaps in Shopify's new variant
+     ids and option names. Fall back to the default rather than stranding the
+     visitor on a phantom "Slutsåld". */
+  const selection = findVariant(product, chosen)
+    ? chosen
+    : defaultSelection(product);
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<"idle" | "choosing" | "added">("idle");
 
@@ -177,10 +184,7 @@ function AddToCartForm({ product, mode = "detail" }: AddToCartFormProps) {
                     type="button"
                     aria-pressed={selected}
                     onClick={() =>
-                      setSelection((current) => ({
-                        ...current,
-                        [group.name]: value,
-                      }))
+                      setChosen({ ...selection, [group.name]: value })
                     }
                     className={`${CHIP_BASE} ${
                       selected ? CHIP_SELECTED : CHIP_IDLE

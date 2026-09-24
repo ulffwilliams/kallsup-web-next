@@ -6,6 +6,10 @@
  * `expired: true` is the one error worth acting on: Shopify drops abandoned
  * carts after roughly ten days, and the response comes back with `cart: null`
  * rather than an error. Callers clear the cookie and start a new cart.
+ *
+ * `staleVariant: true` means the variant id no longer exists — editing a
+ * product's variants in Shopify replaces them with new ids, while the cached
+ * product page still offers the old ones. Callers refresh the product cache.
  */
 /* The `.ts` specifier is what lets `node --test --experimental-strip-types`
    resolve this import; the bundler accepts it too. Type-only imports are
@@ -34,7 +38,9 @@ export type Cart = {
   lines: CartLine[];
 };
 
-export type CartResult = { cart: Cart } | { error: string; expired?: boolean };
+export type CartResult =
+  | { cart: Cart }
+  | { error: string; expired?: boolean; staleVariant?: boolean };
 
 type CartImageNode = {
   url: string;
@@ -69,7 +75,7 @@ export type CartNode = {
 
 type CartMutationPayload = {
   cart: CartNode | null;
-  userErrors: Array<{ message: string }>;
+  userErrors: Array<{ field: string[] | null; message: string }>;
 };
 
 const CART_FIELDS = /* GraphQL */ `
@@ -133,6 +139,7 @@ const CART_CREATE = /* GraphQL */ `
         ...CartFields
       }
       userErrors {
+        field
         message
       }
     }
@@ -151,6 +158,7 @@ const CART_LINES_ADD = /* GraphQL */ `
         ...CartFields
       }
       userErrors {
+        field
         message
       }
     }
@@ -169,6 +177,7 @@ const CART_LINES_UPDATE = /* GraphQL */ `
         ...CartFields
       }
       userErrors {
+        field
         message
       }
     }
@@ -187,6 +196,7 @@ const CART_LINES_REMOVE = /* GraphQL */ `
         ...CartFields
       }
       userErrors {
+        field
         message
       }
     }
@@ -204,6 +214,8 @@ const CART_QUERY = /* GraphQL */ `
 `;
 
 const GENERIC_ERROR = "Kunde inte uppdatera korgen. Försök igen.";
+const STALE_VARIANT_ERROR =
+  "Produkten har uppdaterats sedan sidan laddades. Försök igen.";
 
 export function normalizeCart(node: CartNode): Cart {
   return {
@@ -250,7 +262,15 @@ function toResult(payload: CartMutationPayload | undefined): CartResult {
   }
 
   if (payload.userErrors.length) {
-    return { error: payload.userErrors[0].message };
+    const [error] = payload.userErrors;
+
+    /* Shopify answers a deleted variant with the generic INVALID code, so
+       the field path is the only reliable signal. */
+    if (error.field?.at(-1) === "merchandiseId") {
+      return { error: STALE_VARIANT_ERROR, staleVariant: true };
+    }
+
+    return { error: error.message };
   }
 
   if (!payload.cart) {
