@@ -12,8 +12,8 @@ export const site = {
    page of its own rather than a section link. */
 export const nav = [
   { href: "/#live", label: "Live" },
-  { href: "/#musik", label: "Musik" },
   { href: "/merch", label: "Merch" },
+  { href: "/#musik", label: "Musik" },
   { href: "/#kontakt", label: "Kontakt" },
 ] as const;
 
