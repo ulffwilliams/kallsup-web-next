@@ -171,6 +171,29 @@ h6 {
   .policy-prose ol {
     margin-bottom: 1.1rem;
   }
+
+  /* Shopify's policy editor writes one <div> per source line when text is
+     pasted from a wrapped plain-text file, so a single paragraph arrives as a
+     stack of block elements and breaks mid-sentence. Re-flowing them inline
+     rejoins the prose — the newline between each </div><div> collapses to the
+     space the sentence needs. */
+  .policy-prose div {
+    display: inline;
+  }
+  /* …except the ones carrying a heading, which stay blocks. The editor has no
+     heading button, so a bolded line is the only heading such content has. */
+  .policy-prose div:has(> strong) {
+    display: block;
+    margin-top: 2.25rem;
+    margin-bottom: 0.5rem;
+  }
+  .policy-prose div:has(> strong) strong {
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .policy-prose div:has(> strong) br {
+    display: none;
+  }
   .policy-prose ul,
   .policy-prose ol {
     padding-left: 1.25rem;
