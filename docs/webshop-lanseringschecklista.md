@@ -9,9 +9,10 @@ kompetens läsa villkoren innan första ordern tas emot.
 
 ## 0. Avgör först — allt annat hänger på detta
 
-- [ ] **Vem är säljaren juridiskt?** Bandet som enskild firma, ett aktiebolag,
-      eller Våro Records i eget namn? Avgör vilket org.nr som ska stå, vem som
-      bär ångerrätts- och reklamationsansvaret, och vem som är
+- [ ] **Vem är säljaren juridiskt?** Kontaktadresserna i Shopifys policies går
+      till `@skarrad.se`, så det är sannolikt Skärrad och inte bandet eller
+      Våro Records. Bekräfta bolagsform. Avgör vilket org.nr som ska stå, vem
+      som bär ångerrätts- och reklamationsansvaret, och vem som är
       personuppgiftsansvarig. Står fel part i villkoren är resten verkningslöst.
 - [ ] **Är säljaren momsregistrerad?** Styr om priserna ska anges inkl. moms
       med momssats utskriven, och om momsreg.nr måste finnas i footern.
@@ -77,9 +78,26 @@ fortfarande den — hänvisa till ARN i stället.
 
 ## 3. Shopify-admin
 
-- [ ] **Fyll i Settings → Policies** — återbetalning, integritet,
-      användarvillkor, frakt. Dessa länkas automatiskt i kassan. Texterna ska
-      säga samma sak som sidorna på kallsup.se.
+Policies finns redan. Granskade via Storefront API 2026-09-24:
+
+- [x] ~~Integritetspolicy~~ — 18 700 tecken, svensk, nämner ARN, kontakt via
+      `@skarrad.se`. Inga platshållare.
+- [x] ~~Returpolicy~~ — 2 700 tecken, svensk, 30 dagars öppet köp med
+      ångerfristen på 14 dagar nämnd.
+- [ ] **Användarvillkoren har 13 ofyllda platshållare** — `[LÄNK]` fyra gånger,
+      `[Handlere]`, `[agentnamn]`. Texten inleds dessutom med Shopifys egen
+      brasklapp om att mallen kan vara maskinöversatt och inte utgör juridisk
+      rådgivning. Den ska bort innan publicering.
+- [ ] **Skriv om fraktpolicyn.** Den är 121 tecken lång och på engelska i en
+      svensk butik: "Different shipping method depending on country of the
+      buyer. We ship ASAP, but usually not longer than a few days." Saknar
+      fraktkostnad, leveranstid och zoner. "ASAP" duger inte som leveranstid
+      enligt distansavtalslagen.
+- [ ] **Bestäm om ni verkligen ska sälja till 42 länder.** Butiken levererar
+      idag till bl.a. USA, Japan och Australien. Utanför EU tillkommer tull och
+      exportmoms; inom EU gäller OSS-reglerna vid tröskelvärdet. Begränsa till
+      Sverige eller EU om ingen vill hantera det.
+- [ ] **Se till att texterna säger samma sak som sidorna på kallsup.se.**
 - [ ] **Öppna butiken.** Den är lösenordsskyddad och visar "Opening soon", så
       kassan är oåtkomlig. Kräver att en betalplan väljs.
 - [ ] **Ta bort lösenordsskyddet** under Online Store → Preferences.
