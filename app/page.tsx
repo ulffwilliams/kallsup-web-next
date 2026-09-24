@@ -29,8 +29,8 @@ export default async function Home() {
         <Hero nextGig={upcoming[0]} />
         <SectionSeam />
         <GigList upcoming={upcoming} past={past} />
-        <Releases />
         <Merch />
+        <Releases />
         <Video />
         <Contact />
       </main>

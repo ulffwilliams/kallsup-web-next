@@ -6,7 +6,8 @@ import { releases } from "../_lib/releases";
 /**
  * Musik. Mirrored slab: the featured release runs wide with the meta left and
  * the cover right, and the cover-art grid below it fills right-to-left. Reads
- * as the reverse of Spelningar so the two sections don't stack identically.
+ * as the reverse of the Merch grid above it so the two don't stack
+ * identically.
  */
 function Releases() {
   const [featured, ...rest] = releases;
