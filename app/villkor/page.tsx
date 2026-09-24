@@ -33,7 +33,7 @@ export default async function VillkorPage() {
               <li key={route.slug} className="border-t border-kall-800 py-5">
                 {published.has(route.slug) ? (
                   <Link href={`/villkor/${route.slug}`} className="group block">
-                    <p className="text-sm tracking-[0.04em] text-kall-cream uppercase transition-colors group-hover:text-kall-gold">
+                    <p className="text-sm tracking-[0.04em] text-kall-cream transition-colors group-hover:text-kall-gold">
                       {route.title}
                     </p>
                     {/* type-meta, not type-label: the label role is 11px of kall-500, which
@@ -44,7 +44,7 @@ export default async function VillkorPage() {
                   /* A policy the shop has not written yet is listed but not
                      linked, so the gap is visible rather than silent. */
                   <div>
-                    <p className="text-sm tracking-[0.04em] uppercase">
+                    <p className="text-sm tracking-[0.04em]">
                       {route.title}
                     </p>
                     <p className="type-meta mt-1">Publiceras inom kort.</p>
