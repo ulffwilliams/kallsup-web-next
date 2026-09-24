@@ -23,7 +23,9 @@ function MerchGrid({
   linkToProduct = true,
 }: MerchGridProps) {
   if (!products || products.length === 0) {
-    return <p className="type-label">{emptyMessage}</p>;
+    /* type-meta, not type-label: the label role is 11px of kall-500, which
+       disappears against the olive background at body-text size. */
+    return <p className="type-meta">{emptyMessage}</p>;
   }
 
   return (
