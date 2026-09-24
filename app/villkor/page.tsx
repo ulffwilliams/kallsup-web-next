@@ -52,16 +52,41 @@ export default async function VillkorPage() {
             ))}
           </ul>
 
-          <address className="type-meta mt-12 max-w-prose not-italic">
-            {company.legalName}, org.nr {company.orgNumber}
-            <br />
-            {company.street}
-            {company.postalTown ? <>, {company.postalTown}</> : null}
-            <br />
-            <a href={`mailto:${company.email}`} className="link-underline">
-              {company.email}
-            </a>
-          </address>
+          {/* The seller's identity. E-handelslagen (2002:562) wants it easy,
+              direct and permanently available; the footer links here from
+              every page, which is where it belongs — beside the terms it
+              governs rather than repeated in the chrome.
+
+              The postal line is skipped entirely while `postalTown` is empty,
+              rather than printing a street with no town. */}
+          <section className="mt-14 border-t border-kall-800 pt-8">
+            <h2 className="type-label mb-4 uppercase">Säljare</h2>
+
+            <address className="type-meta max-w-prose leading-7 not-italic">
+              <span className="text-kall-cream">{company.legalName}</span>
+              <br />
+              Organisationsnummer {company.orgNumber}
+              <br />
+              Momsregistreringsnummer {company.vatNumber}
+              {company.postalTown ? (
+                <>
+                  <br />
+                  {company.street}, {company.postalTown}
+                </>
+              ) : null}
+              <br />
+              <a href={`mailto:${company.email}`} className="link-underline">
+                {company.email}
+              </a>
+              <br />
+              <a
+                href={`tel:${company.phone.replace(/\s/g, "")}`}
+                className="link-underline"
+              >
+                {company.phone}
+              </a>
+            </address>
+          </section>
         </Reveal>
       </div>
     </section>
