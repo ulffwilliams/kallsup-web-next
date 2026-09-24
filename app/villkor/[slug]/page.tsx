@@ -67,16 +67,18 @@ export default async function PolicyPage({ params }: PageProps) {
 
         <SectionHeader title={policy.title} />
 
-        <Reveal>
-          {/* The same HTML Shopify renders in its checkout, authored in the
-              store admin rather than by visitors, so this is not an injection
-              surface. Keeping one source means the pre-purchase text and the
-              checkout text cannot drift apart. */}
-          <div
-            className="policy-prose max-w-prose"
-            dangerouslySetInnerHTML={{ __html: policy.body }}
-          />
-        </Reveal>
+        {/* Deliberately not wrapped in Reveal: a fade-in on a document
+            someone opened specifically to read is friction, and a legal text
+            is the last thing that should depend on an observer firing.
+
+            The HTML is the same Shopify renders in its checkout, authored in
+            the store admin rather than by visitors, so this is not an
+            injection surface. One source means the pre-purchase text and the
+            checkout text cannot drift apart. */}
+        <div
+          className="policy-prose max-w-prose"
+          dangerouslySetInnerHTML={{ __html: policy.body }}
+        />
       </div>
     </section>
   );

@@ -53,7 +53,12 @@ function Reveal({
           }
         }
       },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.12 },
+      /* threshold stays 0: a fraction would mean an element taller than the
+         viewport can never satisfy it, so it would sit at opacity 0 forever.
+         The negative bottom rootMargin already holds the reveal back until
+         the element's top has crossed 88% of the viewport, which is what the
+         fraction was there for. */
+      { rootMargin: "0px 0px -12% 0px", threshold: 0 },
     );
 
     observer.observe(node);
