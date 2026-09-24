@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import { getAllProducts, getCollections } from "./_lib/shopify";
+import { getAllProducts, getCollections, getPolicies } from "./_lib/shopify";
 import { filterCategories } from "./_lib/collections";
 
 const SITE_URL = "https://kallsup.se";
@@ -13,9 +13,10 @@ const SITE_URL = "https://kallsup.se";
 export const revalidate = 600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [products, collections] = await Promise.all([
+  const [products, collections, policies] = await Promise.all([
     getAllProducts(),
     getCollections(),
+    getPolicies(),
   ]);
 
   const now = new Date();
@@ -32,6 +33,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${SITE_URL}/merch/${product.handle}`,
       lastModified: now,
       priority: 0.7,
+    })),
+    { url: `${SITE_URL}/villkor`, lastModified: now, priority: 0.3 },
+    ...(policies ?? []).map((policy) => ({
+      url: `${SITE_URL}/villkor/${policy.slug}`,
+      lastModified: now,
+      priority: 0.3,
     })),
   ];
 }

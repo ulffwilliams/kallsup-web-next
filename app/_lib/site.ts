@@ -53,3 +53,22 @@ export const socials = [
 
 /** Looked up by label so the socials array stays free to reorder. */
 export const instagram = socials.find((s) => s.label === "Instagram")!;
+
+/**
+ * The selling entity. Required by e-handelslagen (2002:562) to be easy,
+ * direct and permanently available — hence the footer on every page.
+ *
+ * `postalTown` is deliberately empty until the postcode and city are
+ * confirmed; rendering code skips the line rather than printing half an
+ * address. A street on its own does not meet the geographic address
+ * requirement, so this must be filled before the shop opens.
+ */
+export const company = {
+  legalName: "Skärrad AB",
+  orgNumber: "559550-6444",
+  vatNumber: "SE559550644401",
+  street: "Karlsgatan 12A",
+  postalTown: "",
+  email: "ekonomi@skarrad.se",
+  phone: "+46 73 816 24 89",
+} as const;

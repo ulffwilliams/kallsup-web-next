@@ -18,6 +18,10 @@
  * --color-kall-* tokens, so it always reads as pasted on.
  */
 
+/* `.ts` specifier so node --test can resolve it; see cart.ts. */
+import { POLICY_ROUTES } from "./policies.ts";
+import type { PolicyField } from "./policies";
+
 const API_VERSION = process.env.SHOPIFY_API_VERSION ?? "2026-07";
 
 /** Market context for pricing. SE keeps everything in SEK. */
@@ -641,4 +645,72 @@ export async function getProduct(
       normalizeImage(image, node.title),
     ),
   };
+}
+
+/** One of the store's published policies, addressed by its route slug. */
+export type ShopifyPolicy = {
+  slug: string;
+  title: string;
+  /** Admin-authored HTML, rendered with dangerouslySetInnerHTML. */
+  body: string;
+};
+
+/*
+ * The shop's policies. Rendering these on kallsup.se rather than restating
+ * them keeps one source of truth: the text a visitor reads before buying is
+ * byte-identical to what Shopify shows in the checkout, and an edit in the
+ * admin lands here within the revalidate window.
+ */
+const POLICIES_QUERY = /* GraphQL */ `
+  query ShopPolicies($country: CountryCode!) @inContext(country: $country) {
+    shop {
+      termsOfService {
+        body
+      }
+      refundPolicy {
+        body
+      }
+      shippingPolicy {
+        body
+      }
+      privacyPolicy {
+        body
+      }
+    }
+  }
+`;
+
+type PolicyBody = { body: string } | null;
+
+/**
+ * Returns every route in `POLICY_ROUTES` that the store has actually written,
+ * in that file's order. `null` means the shop is unreachable, which callers
+ * separate from "no policies published".
+ */
+export async function getPolicies(): Promise<ShopifyPolicy[] | null> {
+  const data = await storefront<{ shop: Record<PolicyField, PolicyBody> }>(
+    POLICIES_QUERY,
+    { next: { revalidate: 600, tags: ["policies"] } },
+  );
+
+  if (!data) {
+    return null;
+  }
+
+  return POLICY_ROUTES.flatMap((route) => {
+    const policy = data.shop[route.field];
+
+    if (!policy?.body) {
+      return [];
+    }
+
+    return [{ slug: route.slug, title: route.title, body: policy.body }];
+  });
+}
+
+/** `null` when the slug is unknown, unpublished, or the shop is unreachable. */
+export async function getPolicy(slug: string): Promise<ShopifyPolicy | null> {
+  const policies = await getPolicies();
+
+  return policies?.find((policy) => policy.slug === slug) ?? null;
 }

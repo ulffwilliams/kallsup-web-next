@@ -1,6 +1,6 @@
 import PageShell from "../_components/PageShell";
 
-export default function MerchLayout({
+export default function VillkorLayout({
   children,
 }: {
   children: React.ReactNode;

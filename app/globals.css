@@ -142,6 +142,72 @@ h6 {
     color: var(--color-kall-300);
   }
 
+  /* Shopify's policy HTML, rendered verbatim on /villkor/*. Tailwind's
+     preflight strips heading sizes and list markers, so long-form prose we do
+     not author needs its own rules — otherwise a 27 000-character document
+     renders as one undifferentiated wall. */
+  .policy-prose {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.02em;
+    line-height: 1.75;
+    color: var(--color-kall-300);
+  }
+  .policy-prose h1,
+  .policy-prose h2,
+  .policy-prose h3,
+  .policy-prose h4 {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-kall-cream);
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .policy-prose p,
+  .policy-prose ul,
+  .policy-prose ol {
+    margin-bottom: 1.1rem;
+  }
+  .policy-prose ul,
+  .policy-prose ol {
+    padding-left: 1.25rem;
+  }
+  .policy-prose ul {
+    list-style: disc;
+  }
+  .policy-prose ol {
+    list-style: decimal;
+  }
+  .policy-prose li {
+    margin-bottom: 0.4rem;
+  }
+  .policy-prose a {
+    color: var(--color-kall-cream);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .policy-prose a:hover {
+    color: var(--color-kall-gold);
+  }
+  .policy-prose strong {
+    color: var(--color-kall-cream);
+    font-weight: 700;
+  }
+  .policy-prose table {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    border-collapse: collapse;
+  }
+  .policy-prose th,
+  .policy-prose td {
+    border: 1px solid var(--color-kall-700);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+
   /* Price on a product page. The label role is 11px of muted kall-500 — right
      for dates and catalogue numbers, wrong for the one number a buyer is
      actually looking for. */
