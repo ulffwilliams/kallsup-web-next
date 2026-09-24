@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import SectionHeader from "../../_components/SectionHeader";
 import Reveal from "../../_components/Reveal";
+import SitePrivacyNotice from "../../_components/SitePrivacyNotice";
 import { getPolicies, getPolicy } from "../../_lib/shopify";
 import { policyBySlug } from "../../_lib/policies";
 import { metaDescription } from "../../_lib/seo";
@@ -79,6 +80,10 @@ export default async function PolicyPage({ params }: PageProps) {
           className="policy-prose max-w-prose"
           dangerouslySetInnerHTML={{ __html: policy.body }}
         />
+
+        {/* Shopify's text covers Shopify. What this site does on its own is
+            disclosed by the same controller, on the same page. */}
+        {slug === "integritetspolicy" && <SitePrivacyNotice />}
       </div>
     </section>
   );

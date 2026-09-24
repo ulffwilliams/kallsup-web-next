@@ -71,6 +71,14 @@ export async function recordClick(
       `INSERT INTO ticket_clicks (gig_id, referrer, user_agent) VALUES ($1, $2, $3)`,
       [gigId, referrer?.slice(0, 500) ?? null, userAgent?.slice(0, 500) ?? null],
     );
+
+    /* Retention, enforced here rather than by a cron nobody would remember to
+       set up: the privacy notice promises 24 months, and a promise that no
+       code keeps is worse than no promise. Runs inside the same `after()`, on
+       a table of a few thousand rows, so it costs the fan nothing. */
+    await sql.query(
+      `DELETE FROM ticket_clicks WHERE clicked_at < now() - interval '24 months'`,
+    );
   } catch (error) {
     console.error(`ticket click for gig ${gigId} not recorded:`, error);
   }
