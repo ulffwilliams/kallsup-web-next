@@ -36,7 +36,9 @@ export default async function VillkorPage() {
                     <p className="text-sm tracking-[0.04em] text-kall-cream uppercase transition-colors group-hover:text-kall-gold">
                       {route.title}
                     </p>
-                    <p className="type-label mt-1">{route.summary}</p>
+                    {/* type-meta, not type-label: the label role is 11px of kall-500, which
+                        disappears against the olive background at body-text size. */}
+                    <p className="type-meta mt-1">{route.summary}</p>
                   </Link>
                 ) : (
                   /* A policy the shop has not written yet is listed but not
@@ -45,7 +47,7 @@ export default async function VillkorPage() {
                     <p className="text-sm tracking-[0.04em] uppercase">
                       {route.title}
                     </p>
-                    <p className="type-label mt-1">Publiceras inom kort.</p>
+                    <p className="type-meta mt-1">Publiceras inom kort.</p>
                   </div>
                 )}
               </li>
@@ -60,8 +62,6 @@ export default async function VillkorPage() {
               The postal line is skipped entirely while `postalTown` is empty,
               rather than printing a street with no town. */}
           <section className="mt-14 border-t border-kall-800 pt-8">
-            <h2 className="type-label mb-4 uppercase">Säljare</h2>
-
             <address className="type-meta max-w-prose leading-7 not-italic">
               <span className="text-kall-cream">{company.legalName}</span>
               <br />
@@ -77,13 +77,6 @@ export default async function VillkorPage() {
               <br />
               <a href={`mailto:${company.email}`} className="link-underline">
                 {company.email}
-              </a>
-              <br />
-              <a
-                href={`tel:${company.phone.replace(/\s/g, "")}`}
-                className="link-underline"
-              >
-                {company.phone}
               </a>
             </address>
           </section>
