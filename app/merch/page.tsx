@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   ),
   alternates: { canonical: "/merch" },
   openGraph: {
-    title: "Merch — Kallsup",
+    title: "Merch | Kallsup",
     description: "Vinyl, kläder och accessoarer från Kallsup.",
     url: "/merch",
     type: "website",

@@ -46,7 +46,7 @@ export async function generateMetadata({
     description,
     alternates: { canonical: `/merch/kategori/${collection.handle}` },
     openGraph: {
-      title: `${title} — Kallsup`,
+      title: `${title} | Kallsup`,
       description,
       url: `/merch/kategori/${collection.handle}`,
       type: "website",

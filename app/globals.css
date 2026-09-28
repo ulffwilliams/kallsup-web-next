@@ -720,6 +720,13 @@ h6 {
   background-size:
     110px 110px,
     160px 160px;
+}
+
+/* Only the hero's grain moves. Every merch tile and cover carries an overlay
+   too, and a dozen perpetually animating layers inside scrolling content is
+   constant repaint for grain nobody can tell apart from still grain at that
+   size. The fixed #background-noise already keeps the page alive. */
+#hero .grain-overlay {
   animation: noise-drift 220ms steps(2) infinite;
 }
 

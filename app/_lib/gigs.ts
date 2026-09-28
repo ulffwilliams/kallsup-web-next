@@ -53,15 +53,6 @@ export async function getUpcomingGigs(): Promise<Gig[]> {
   return rows as Gig[];
 }
 
-export async function getPastGigs(limit = 24): Promise<Gig[]> {
-  const sql = db();
-  const rows = await sql.query(
-    `SELECT ${SELECT_GIG} FROM events WHERE date < ${TODAY} ORDER BY date DESC LIMIT $1`,
-    [limit],
-  );
-  return rows as Gig[];
-}
-
 const MONTHS_SV = [
   "JAN",
   "FEB",

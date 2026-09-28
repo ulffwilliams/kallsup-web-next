@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { nav, socials} from "../_lib/site";
+import { nav, socials } from "../_lib/site";
+import { featuredRelease } from "../_lib/releases";
 
 type MobileMenuProps = {
   open: boolean;
@@ -41,16 +42,13 @@ function MobileMenu({ open, onClose }: MobileMenuProps) {
     >
       <nav aria-label="Huvudmeny">
         <ul className="flex flex-col gap-2">
-          {nav.map((item, index) => (
+          {nav.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
                 onClick={onClose}
                 className="type-huge block py-1 text-kall-cream transition-colors hover:text-kall-gold"
               >
-                <span className="type-label mr-3 align-super">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
                 {item.label}
               </Link>
             </li>
@@ -59,14 +57,18 @@ function MobileMenu({ open, onClose }: MobileMenuProps) {
       </nav>
 
       <div className="flex flex-col gap-6">
-        <a
-          href="https://varorecords.bandcamp.com/album/alldeles-f-r-n-ra"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn btn-solid justify-center"
-        >
-          Köp skivan
-        </a>
+        {/* Same label and link as the hero CTA, both read from the featured
+            release, so the two cannot drift apart. */}
+        {featuredRelease?.ctaLink && featuredRelease.ctaTitle && (
+          <a
+            href={featuredRelease.ctaLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-solid justify-center"
+          >
+            {featuredRelease.ctaTitle}
+          </a>
+        )}
         <div className="flex gap-6">
           {socials.map((social) => (
             <a

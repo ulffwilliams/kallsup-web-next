@@ -41,7 +41,7 @@ export async function generateMetadata({
     description,
     alternates: { canonical: url },
     openGraph: {
-      title: `${title} — Kallsup`,
+      title: `${title} | Kallsup`,
       description,
       url,
       type: "website",

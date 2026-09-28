@@ -49,13 +49,13 @@ const typewriter = localFont({
 });
 
 const description =
-  "Kallsup är ett shoegaze/alternativt rockband från Örebro. 'Alldeles för nära' ute 2:a Oktober.";
+  "Kallsup är ett shoegaze/alternativt rockband från Örebro. ”Alldeles för nära” ute 2 oktober.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://kallsup.se"),
   title: {
     default: "Kallsup",
-    template: "%s — Kallsup",
+    template: "%s | Kallsup",
   },
   description,
   /* Safari's data detectors read the gig rows (date + city + venue) as
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
         url: "/images/press-horizontal.jpg",
         width: 2560,
         height: 1707,
-        alt: "Kallsup — pressbild",
+        alt: "Kallsup, pressbild",
       },
     ],
   },

@@ -8,17 +8,14 @@ import Releases from "./_components/Releases";
 import Merch from "./_components/Merch";
 import Video from "./_components/Video";
 import Contact from "./_components/Contact";
-import { getUpcomingGigs, getPastGigs } from "./_lib/gigs";
+import { getUpcomingGigs } from "./_lib/gigs";
 
 /* Gigs change weekly, not per request. The admin actions revalidate this path
    on write, so edits still show up immediately. */
 export const revalidate = 300;
 
 export default async function Home() {
-  const [upcoming, past] = await Promise.all([
-    getUpcomingGigs(),
-    getPastGigs(),
-  ]);
+  const upcoming = await getUpcomingGigs();
 
   return (
     <div id="top" className="relative isolate w-full">
@@ -26,9 +23,9 @@ export default async function Home() {
       <SiteHeader />
 
       <main id="main" className="relative z-10">
-        <Hero nextGig={upcoming[0]} />
+        <Hero />
         <SectionSeam />
-        <GigList upcoming={upcoming} past={past} />
+        <GigList upcoming={upcoming} />
         <Merch />
         <Releases />
         <Video />

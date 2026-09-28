@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { useCart } from "./CartProvider";
 
@@ -91,7 +92,12 @@ function CartDrawer() {
         </div>
 
         {lines.length === 0 ? (
-          <p className="type-label px-6 py-8">Varukorgen är tom.</p>
+          <div className="px-6 py-8">
+            <p className="type-meta">Varukorgen är tom.</p>
+            <Link href="/merch" onClick={closeCart} className="btn btn-bare mt-2">
+              Se all merch
+            </Link>
+          </div>
         ) : (
           <ul className="flex-1 overflow-y-auto px-6 py-4">
             {lines.map((line) => (

@@ -1,11 +1,7 @@
 import Image from "next/image";
 import Parallax from "./Parallax";
-import { formatGigDate, type Gig } from "../_lib/gigs";
 import { site } from "../_lib/site";
-
-type HeroProps = {
-  nextGig?: Gig;
-};
+import { featuredRelease } from "../_lib/releases";
 
 /**
  * Full-bleed press photo under the existing warm gradient and grain, with the
@@ -17,9 +13,7 @@ type HeroProps = {
  * get smaller top to bottom so every layer pulls away from the one under it —
  * see Parallax for why that ordering matters.
  */
-function Hero({ nextGig }: HeroProps) {
-  const next = nextGig ? formatGigDate(nextGig.date) : null;
-
+function Hero() {
   return (
     <section
       id="hero"
@@ -50,7 +44,7 @@ function Hero({ nextGig }: HeroProps) {
         <Parallax speed={-0.26} fade>
           <h1 className="type-mega text-kall-cream/80">
             Alldeles för
-            <span className="block pl-6 text-kall-gold italic sm:pl-12 md:pl-20">
+            <span className="block pl-6 text-kall-gold sm:pl-12 md:pl-20">
               nära
             </span>
           </h1>
@@ -61,14 +55,16 @@ function Hero({ nextGig }: HeroProps) {
           fade
           className="mt-10 flex flex-wrap items-center gap-3"
         >
-          <a
-            href="https://varorecords.bandcamp.com/album/alldeles-f-r-n-ra"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-solid"
-          >
-            Förhandsbeställ skivan
-          </a>
+          {featuredRelease?.ctaLink && featuredRelease.ctaTitle && (
+            <a
+              href={featuredRelease.ctaLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-solid"
+            >
+              {featuredRelease.ctaTitle}
+            </a>
+          )}
           <a href="#live" className="btn uppercase">
             Live
           </a>

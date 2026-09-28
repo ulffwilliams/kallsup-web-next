@@ -241,7 +241,7 @@ function AddToCartForm({ product, mode = "detail" }: AddToCartFormProps) {
           className="btn btn-solid mt-4 w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
         >
           {step === "added"
-            ? "Tillagd ✓"
+            ? "Tillagd"
             : !expands && selectedSoldOut
               ? "Slutsåld"
               : busy
