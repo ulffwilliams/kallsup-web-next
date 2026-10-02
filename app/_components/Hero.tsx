@@ -67,7 +67,7 @@ function Hero({ nextGig }: HeroProps) {
             rel="noopener noreferrer"
             className="btn btn-solid"
           >
-            Förhandsbeställ skivan
+            Köp skivan
           </a>
           <a href="#live" className="btn uppercase">
             Live

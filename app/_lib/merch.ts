@@ -20,7 +20,7 @@ export type MerchItem = {
 export const merchItems: MerchItem[] = [
   {
     slug: "afn-vinyl-black",
-    name: "Alldeles för nära (PRE-ORDER)",
+    name: "Alldeles för nära",
     variant: "Svart vinyl",
     url: "https://varorecords.bandcamp.com/album/alldeles-f-r-n-ra",
     image: "/images/afn-front-bgw.png",
