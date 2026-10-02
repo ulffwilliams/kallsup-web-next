@@ -1,15 +1,13 @@
 import GigRow from "./GigRow";
-import PastGigs from "./PastGigs";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
 import type { Gig } from "../_lib/gigs";
 
 type GigListProps = {
   upcoming: Gig[];
-  past: Gig[];
 };
 
-function GigList({ upcoming, past }: GigListProps) {
+function GigList({ upcoming }: GigListProps) {
   return (
     <section id="live" className="section-y scroll-mt-24">
       <div className="shell">
@@ -19,7 +17,7 @@ function GigList({ upcoming, past }: GigListProps) {
 
         {upcoming.length === 0 ? (
           <Reveal className="type-meta max-w-xl">
-            Inga spelningar inbokade för tillfället.. Det kommer!
+            Inga spelningar inbokade för tillfället. Det kommer!
           </Reveal>
         ) : (
           /* One observer for the list; rows stagger via .gig-stagger in CSS,
@@ -32,8 +30,6 @@ function GigList({ upcoming, past }: GigListProps) {
             </ul>
           </Reveal>
         )}
-
-        <PastGigs gigs={past} />
       </div>
     </section>
   );

@@ -48,7 +48,7 @@ function SiteHeader() {
 
           <a
             href="#top"
-            aria-label={`${site.name} — till toppen`}
+            aria-label={`${site.name}, till toppen`}
             className="logo-shell shrink-0"
           >
             <span className="logo-static-layer" aria-hidden="true" />

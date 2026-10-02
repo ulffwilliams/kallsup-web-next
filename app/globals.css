@@ -63,7 +63,12 @@ html,
 body {
   min-height: 100%;
   background: var(--color-kall-void);
-  overflow-x: hidden;
+  /* `clip`, not `hidden`. Setting one axis to `hidden` forces the other to
+     `auto`, which turns <html> into a scroll container — and every
+     `position: sticky` descendant then anchors to that instead of the
+     viewport and silently stops sticking. `clip` cuts the same horizontal
+     overflow without creating a scrollport. */
+  overflow-x: clip;
 }
 
 html {
@@ -590,6 +595,13 @@ h6 {
   background-size:
     110px 110px,
     160px 160px;
+}
+
+/* Only the hero's grain moves. Every merch tile and cover carries an overlay
+   too, and a dozen perpetually animating layers inside scrolling content is
+   constant repaint for grain nobody can tell apart from still grain at that
+   size. The fixed #background-noise already keeps the page alive. */
+#hero .grain-overlay {
   animation: noise-drift 220ms steps(2) infinite;
 }
 

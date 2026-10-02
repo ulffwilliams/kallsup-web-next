@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://kallsup.se"),
   title: {
     default: "Kallsup",
-    template: "%s — Kallsup",
+    template: "%s | Kallsup",
   },
   description,
   /* Safari's data detectors read the gig rows (date + city + venue) as
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
         url: "/images/press-horizontal.jpg",
         width: 2560,
         height: 1707,
-        alt: "Kallsup — pressbild",
+        alt: "Kallsup, pressbild",
       },
     ],
   },

@@ -3,8 +3,6 @@ import { ticketHref } from "../_lib/ticketClicks";
 
 type GigRowProps = {
   gig: Gig;
-  /** Past gigs drop the CTA and sit dimmer. */
-  past?: boolean;
 };
 
 /**
@@ -36,14 +34,12 @@ function OutboundArrow() {
  * arrow nudges on its own hover. Nothing moves for a mouse merely passing
  * through.
  */
-function GigRow({ gig, past = false }: GigRowProps) {
+function GigRow({ gig }: GigRowProps) {
   const date = formatGigDate(gig.date);
 
   return (
     <li
-      className={`pl-2 group relative grid grid-cols-[4.5rem_1fr] items-center gap-x-6 gap-y-1 border-b border-kall-800 py-5 transition-colors hover:bg-white/[0.02] md:grid-cols-[7rem_11rem_1fr_auto] md:gap-x-8 ${
-        past ? "opacity-60" : ""
-      }`}
+      className="pl-2 group relative grid grid-cols-[4.5rem_1fr] items-center gap-x-6 gap-y-1 border-b border-kall-800 py-5 transition-colors hover:bg-white/[0.02] md:grid-cols-[7rem_11rem_1fr_auto] md:gap-x-8"
     >
       <span
         aria-hidden="true"
@@ -52,7 +48,7 @@ function GigRow({ gig, past = false }: GigRowProps) {
 
       <div className="row-span-2 md:row-span-1">
         <span className="type-label block text-kall-cream">{date.month}</span>
-        <span className="font-display text-3xl leading-none font-bold tracking-tight text-kall-cream italic">
+        <span className="font-display text-3xl leading-none font-bold tracking-tight text-kall-cream">
           {date.day}
         </span>
         <span className="type-label block text-kall-cream">{date.year}</span>
@@ -72,30 +68,28 @@ function GigRow({ gig, past = false }: GigRowProps) {
         )}
       </p>
 
-      {!past && (
-        <div className="col-start-2 mt-2 md:col-start-4 md:mt-0">
-          {gig.soldout ? (
-            <span className="type-label">Slutsålt</span>
-          ) : gig.ticketlink && gig.ticketsreleased ? (
-            /* Counted hop, not the vendor URL — see app/go/biljett. */
-            <a
-              href={ticketHref(gig.id)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-solid"
-            >
-              Biljetter
-              <OutboundArrow />
-            </a>
-          ) : gig.ticketreleasedate && !gig.ticketsreleased ? (
-            <span className="type-label">
-              Biljettsläpp: {formatTicketRelease(gig.ticketreleasedate)}
-            </span>
-          ) : (
-            <span className="type-label">Biljetter snart</span>
-          )}
-        </div>
-      )}
+      <div className="col-start-2 mt-2 md:col-start-4 md:mt-0">
+        {gig.soldout ? (
+          <span className="type-label">Slutsålt</span>
+        ) : gig.ticketlink && gig.ticketsreleased ? (
+          /* Counted hop, not the vendor URL — see app/go/biljett. */
+          <a
+            href={ticketHref(gig.id)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-solid"
+          >
+            Biljetter
+            <OutboundArrow />
+          </a>
+        ) : gig.ticketreleasedate && !gig.ticketsreleased ? (
+          <span className="type-label">
+            Biljettsläpp: {formatTicketRelease(gig.ticketreleasedate)}
+          </span>
+        ) : (
+          <span className="type-label">Biljetter snart</span>
+        )}
+      </div>
     </li>
   );
 }

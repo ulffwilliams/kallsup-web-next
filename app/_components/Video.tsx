@@ -9,7 +9,7 @@ import Reveal from "./Reveal";
  * the critical path — the section sits well below the fold.
  */
 const VIDEO_ID = "ts2tQTctmTk";
-const VIDEO_TITLE = "Kallsup — Kino (officiell musikvideo)";
+const VIDEO_TITLE = "Kallsup: Kino (officiell musikvideo)";
 
 function Video() {
   return (
@@ -29,7 +29,6 @@ function Video() {
               className="absolute inset-0 h-full w-full border-0"
             />
           </div>
-          <p className="type-label mt-3">{VIDEO_TITLE}</p>
         </Reveal>
       </div>
     </section>

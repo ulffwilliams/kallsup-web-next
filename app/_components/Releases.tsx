@@ -6,7 +6,8 @@ import { releases } from "../_lib/releases";
 /**
  * Musik. Mirrored slab: the featured release runs wide with the meta left and
  * the cover right, and the cover-art grid below it fills right-to-left. Reads
- * as the reverse of Spelningar so the two sections don't stack identically.
+ * as the reverse of the Merch grid above it so the two don't stack
+ * identically.
  */
 function Releases() {
   const [featured, ...rest] = releases;
@@ -23,7 +24,7 @@ function Releases() {
           <Reveal className="grid items-center gap-8 md:grid-cols-[1fr_minmax(0,26rem)] md:gap-14">
             <div className="order-2 md:order-1 md:text-right">
               <p className="type-label mb-4">
-                {featured.year} — {featured.format}
+                {featured.year} · {featured.format}
               </p>
               <h3 className="type-huge mb-6 text-kall-cream">
                 {featured.title}
@@ -55,7 +56,7 @@ function Releases() {
                     href={featured.ctaLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn btn-solid"
+                    className={featured.spotify ? "btn" : "btn btn-solid"}
                   >
                     {featured.ctaTitle}
                   </a>
@@ -71,7 +72,7 @@ function Releases() {
             <div className="relative aspect-square w-full overflow-hidden order-1 md:order-2">
               <Image
                 src={featured.cover}
-                alt={`${featured.title} — omslag`}
+                alt={`Omslag till ${featured.title}`}
                 fill
                 sizes="(max-width: 768px) 90vw, 26rem"
                 className="object-cover"
@@ -97,7 +98,7 @@ function Releases() {
                     <div className="relative aspect-square w-full overflow-hidden">
                       <Image
                         src={release.coverThumb ?? release.cover}
-                        alt={`${release.title} — omslag`}
+                        alt={`Omslag till ${release.title}`}
                         fill
                         sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 22vw"
                         className="cover-muted hover-zoom object-cover transition-[filter] duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
@@ -108,7 +109,7 @@ function Releases() {
                       {release.title}
                     </p>
                     <p className="type-label mt-1">
-                      {release.year} — {release.format}
+                      {release.year} · {release.format}
                     </p>
                   </a>
                 </li>
