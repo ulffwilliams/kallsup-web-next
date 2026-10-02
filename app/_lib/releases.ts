@@ -31,7 +31,7 @@ export const releases: Release[] = [
     year: "2026",
     format: "Album",
     status: "Snart",
-    ctaTitle: "Förhandsbeställ skivan",
+    ctaTitle: "Köp skivan",
     ctaLink: "https://varorecords.bandcamp.com/album/alldeles-f-r-n-ra",
     cover: "/images/cover-afn.jpg",
     coverThumb: "/images/cover-afn-sm.jpg",
