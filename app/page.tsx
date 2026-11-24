@@ -10,8 +10,9 @@ import Video from "./_components/Video";
 import Contact from "./_components/Contact";
 import { getUpcomingGigs } from "./_lib/gigs";
 
-/* Gigs change weekly, not per request. The admin actions revalidate this path
-   on write, so edits still show up immediately. */
+/* Regenerates every 5 minutes so publishdate/ticketreleasedate flip within
+   5 minutes of Stockholm midnight. Regeneration reads the cached gig catalog,
+   not the database — see app/_lib/gigs.ts and docs/gig-cache.md. */
 export const revalidate = 300;
 
 export default async function Home() {

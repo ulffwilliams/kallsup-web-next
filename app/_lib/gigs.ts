@@ -1,65 +1,63 @@
+import { unstable_cache } from "next/cache";
+
 import { db } from "./db";
+import {
+  stockholmToday,
+  toUpcomingGigs,
+  type Gig,
+  type GigCatalogEntry,
+} from "./gigDates";
 
-export type Gig = {
-  id: number;
-  /** Always "YYYY-MM-DD" — see note below on why this is a string. */
-  date: string;
-  location: string;
-  venue: string;
-  note: string | null;
-  ticketlink: string | null;
-  /** "YYYY-MM-DD", or null when no on-sale date has been announced. */
-  ticketreleasedate: string | null;
-  /**
-   * Whether `ticketreleasedate` has arrived — resolved by Postgres, not here.
-   * Vercel runs in UTC, so a JS `new Date()` would still report yesterday for
-   * the first one or two hours of a Stockholm day and hold the ticket link
-   * back. True when there is no release date at all, so a gig that just has a
-   * ticketlink still renders one.
-   */
-  ticketsreleased: boolean;
-  /** True when the gig is sold out — the ticket CTA is replaced by an indicator. */
-  soldout: boolean;
-};
+export type { Gig } from "./gigDates";
+
+/** Cache tag for the gig catalog. `/api/revalidate` invalidates it. */
+export const GIGS_TAG = "gigs";
 
 /*
- * `events.publishdate` (DATE, nullable) holds a gig back until that Stockholm
- * day. NULL means "visible immediately". The page revalidates every 5 minutes,
- * so a gig appears within that window after midnight on its publish date.
+ * Why a cached catalog instead of querying per render: every Neon query keeps
+ * the compute awake for ~5 minutes, and the front page regenerates every 5
+ * minutes under traffic — that alone kept the compute up around the clock.
+ *
+ * So the database is read at most once an hour (or right after someone opens
+ * /api/revalidate), and the date rules — `publishdate`, `ticketreleasedate`,
+ * "is it in the past" — run in JS against Stockholm's date on every
+ * regeneration. Midnight flips still land within the page's 5-minute window
+ * with no query at all. See docs/gig-cache.md.
+ *
+ * `date >= today - 1` rather than `>= today`: if the cache was filled late in
+ * the evening, the margin keeps tonight's gig in it past midnight; the JS
+ * filter drops it once its date is gone.
+ *
+ * DATE columns go through to_char(...): the serverless driver would otherwise
+ * parse them into a JS Date at local midnight, which serialises as the
+ * *previous* day in UTC (2026-07-25 -> 2026-07-24T22:00:00.000Z).
  */
-
-/*
- * `events.date` is a DATE column. The serverless driver parses it into a JS
- * Date at local midnight, which serialises as the *previous* day in UTC
- * (2026-07-25 -> 2026-07-24T22:00:00.000Z). Selecting to_char(...) keeps the
- * calendar day intact and out of Date's hands entirely; the formatters below
- * split the string rather than re-parsing it.
- */
-
-/** Today in Stockholm, resolved by Postgres so the cutoff matches the band. */
-const TODAY = `(now() AT TIME ZONE 'Europe/Stockholm')::date`;
-
-const SELECT_GIG = `
-  id,
-  to_char(date, 'YYYY-MM-DD') AS date,
-  location,
-  venue,
-  note,
-  ticketlink,
-  to_char(ticketreleasedate, 'YYYY-MM-DD') AS ticketreleasedate,
-  (ticketreleasedate IS NULL OR ticketreleasedate <= ${TODAY}) AS ticketsreleased,
-  soldout
-`;
+export const getGigCatalog = unstable_cache(
+  async (): Promise<GigCatalogEntry[]> => {
+    const sql = db();
+    const rows = await sql.query(
+      `SELECT
+         id,
+         to_char(date, 'YYYY-MM-DD') AS date,
+         location,
+         venue,
+         note,
+         ticketlink,
+         to_char(publishdate, 'YYYY-MM-DD') AS publishdate,
+         to_char(ticketreleasedate, 'YYYY-MM-DD') AS ticketreleasedate,
+         soldout
+       FROM events
+       WHERE date >= (now() AT TIME ZONE 'Europe/Stockholm')::date - 1
+       ORDER BY date ASC`,
+    );
+    return rows as GigCatalogEntry[];
+  },
+  ["gig-catalog"],
+  { revalidate: 3600, tags: [GIGS_TAG] },
+);
 
 export async function getUpcomingGigs(): Promise<Gig[]> {
-  const sql = db();
-  const rows = await sql.query(
-    `SELECT ${SELECT_GIG} FROM events
-     WHERE date >= ${TODAY}
-       AND (publishdate IS NULL OR publishdate <= ${TODAY})
-     ORDER BY date ASC`,
-  );
-  return rows as Gig[];
+  return toUpcomingGigs(await getGigCatalog(), stockholmToday());
 }
 
 const MONTHS_SV = [
