@@ -34,10 +34,11 @@ export function isBot(userAgent: string | null) {
  */
 export async function getTicketLink(gigId: number): Promise<string | null> {
   const catalog = await getGigCatalog();
-  const entry = catalog.find((gig) => gig.id === gigId);
-  if (!entry || !isTicketLinkLive(entry, stockholmToday())) return null;
+  // Number(): an int8 id would come back from Neon as a string.
+  const entry = catalog.find((gig) => Number(gig.id) === gigId);
+  if (!entry?.ticketlink || !isTicketLinkLive(entry, stockholmToday())) return null;
 
-  const ticketlink = entry.ticketlink as string;
+  const ticketlink = entry.ticketlink;
   try {
     const url = new URL(ticketlink);
     return url.protocol === "https:" || url.protocol === "http:"

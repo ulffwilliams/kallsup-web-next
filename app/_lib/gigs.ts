@@ -24,9 +24,11 @@ export const GIGS_TAG = "gigs";
  * regeneration. Midnight flips still land within the page's 5-minute window
  * with no query at all. See docs/gig-cache.md.
  *
- * `date >= today - 1` rather than `>= today`: if the cache was filled late in
- * the evening, the margin keeps tonight's gig in it past midnight; the JS
- * filter drops it once its date is gone.
+ * `date >= today - 1` rather than `>= today`: the page does not need the
+ * margin (the JS filter drops past gigs), but `/go/biljett` does — the old
+ * ticket-link SQL ignored the gig date, so a link shared on the night of a
+ * show keeps redirecting through the following day instead of bouncing to
+ * /#live at midnight.
  *
  * DATE columns go through to_char(...): the serverless driver would otherwise
  * parse them into a JS Date at local midnight, which serialises as the
