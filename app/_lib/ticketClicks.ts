@@ -19,7 +19,7 @@ export function isBot(userAgent: string | null) {
 
 /**
  * Resolves a gig's ticket URL. Returns null when the gig is unknown, has no
- * link yet, or is not on sale — the route sends those back to the site rather
+ * link yet, is not published yet, or is not on sale — the route sends those back to the site rather
  * than to a dead vendor page.
  *
  * The URL is re-checked here even though it comes from our own database:
@@ -33,6 +33,8 @@ export async function getTicketLink(gigId: number): Promise<string | null> {
      FROM events
      WHERE id = $1
        AND ticketlink IS NOT NULL
+       AND (publishdate IS NULL
+            OR publishdate <= (now() AT TIME ZONE 'Europe/Stockholm')::date)
        AND (ticketreleasedate IS NULL
             OR ticketreleasedate <= (now() AT TIME ZONE 'Europe/Stockholm')::date)`,
     [gigId],

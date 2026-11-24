@@ -23,6 +23,12 @@ export type Gig = {
 };
 
 /*
+ * `events.publishdate` (DATE, nullable) holds a gig back until that Stockholm
+ * day. NULL means "visible immediately". The page revalidates every 5 minutes,
+ * so a gig appears within that window after midnight on its publish date.
+ */
+
+/*
  * `events.date` is a DATE column. The serverless driver parses it into a JS
  * Date at local midnight, which serialises as the *previous* day in UTC
  * (2026-07-25 -> 2026-07-24T22:00:00.000Z). Selecting to_char(...) keeps the
@@ -48,7 +54,10 @@ const SELECT_GIG = `
 export async function getUpcomingGigs(): Promise<Gig[]> {
   const sql = db();
   const rows = await sql.query(
-    `SELECT ${SELECT_GIG} FROM events WHERE date >= ${TODAY} ORDER BY date ASC`,
+    `SELECT ${SELECT_GIG} FROM events
+     WHERE date >= ${TODAY}
+       AND (publishdate IS NULL OR publishdate <= ${TODAY})
+     ORDER BY date ASC`,
   );
   return rows as Gig[];
 }
