@@ -1,4 +1,6 @@
 import { db } from "./db";
+import { isTicketLinkLive, stockholmToday } from "./gigDates";
+import { getGigCatalog } from "./gigs";
 
 /** The link a gig row points at. Never the vendor URL — see `recordClick`. */
 export function ticketHref(gigId: number) {
@@ -18,30 +20,24 @@ export function isBot(userAgent: string | null) {
 }
 
 /**
- * Resolves a gig's ticket URL. Returns null when the gig is unknown, has no
- * link yet, is not published yet, or is not on sale — the route sends those back to the site rather
- * than to a dead vendor page.
+ * Resolves a gig's ticket URL. Returns null when the gig is unknown (or past),
+ * has no link yet, is not published yet, or is not on sale — the route sends
+ * those back to the site rather than to a dead vendor page.
+ *
+ * Reads the cached gig catalog, not the database, so a click only wakes Neon
+ * for the INSERT in `recordClick`. A link edited in SQL takes effect after
+ * /api/revalidate (or within the hour) — same as the front page.
  *
  * The URL is re-checked here even though it comes from our own database:
  * `Response.redirect` throws on anything that is not absolute, and a stray
  * javascript:/data: value must never be handed to a browser as a destination.
  */
 export async function getTicketLink(gigId: number): Promise<string | null> {
-  const sql = db();
-  const rows = await sql.query(
-    `SELECT ticketlink
-     FROM events
-     WHERE id = $1
-       AND ticketlink IS NOT NULL
-       AND (publishdate IS NULL
-            OR publishdate <= (now() AT TIME ZONE 'Europe/Stockholm')::date)
-       AND (ticketreleasedate IS NULL
-            OR ticketreleasedate <= (now() AT TIME ZONE 'Europe/Stockholm')::date)`,
-    [gigId],
-  );
-  const ticketlink = rows[0]?.ticketlink as string | undefined;
-  if (!ticketlink) return null;
+  const catalog = await getGigCatalog();
+  const entry = catalog.find((gig) => gig.id === gigId);
+  if (!entry || !isTicketLinkLive(entry, stockholmToday())) return null;
 
+  const ticketlink = entry.ticketlink as string;
   try {
     const url = new URL(ticketlink);
     return url.protocol === "https:" || url.protocol === "http:"
