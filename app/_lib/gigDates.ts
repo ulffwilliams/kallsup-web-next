@@ -73,30 +73,48 @@ function isReleased(entry: GigCatalogEntry, today: string) {
   return entry.ticketreleasedate === null || entry.ticketreleasedate <= today;
 }
 
+/** Earliest first; same-day gigs by id so the order is stable. */
+function byDateAsc(a: GigCatalogEntry, b: GigCatalogEntry) {
+  return a.date === b.date ? a.id - b.id : a.date < b.date ? -1 : 1;
+}
+
+function toGig(entry: GigCatalogEntry, today: string): Gig {
+  return {
+    id: entry.id,
+    date: entry.date,
+    location: entry.location,
+    venue: entry.venue,
+    note: entry.note,
+    ticketlink: entry.ticketlink,
+    ticketreleasedate: entry.ticketreleasedate,
+    ticketsreleased: isReleased(entry, today),
+    soldout: entry.soldout,
+  };
+}
+
 /** Published gigs from `today` on, earliest first, in the shape the page renders. */
 export function toUpcomingGigs(catalog: GigCatalogEntry[], today: string): Gig[] {
   return catalog
     .filter((entry) => entry.date >= today && isPublished(entry, today))
-    .sort((a, b) =>
-      a.date === b.date ? a.id - b.id : a.date < b.date ? -1 : 1,
-    )
-    .map((entry) => ({
-      id: entry.id,
-      date: entry.date,
-      location: entry.location,
-      venue: entry.venue,
-      note: entry.note,
-      ticketlink: entry.ticketlink,
-      ticketreleasedate: entry.ticketreleasedate,
-      ticketsreleased: isReleased(entry, today),
-      soldout: entry.soldout,
-    }));
+    .sort(byDateAsc)
+    .map((entry) => toGig(entry, today));
+}
+
+/**
+ * Published gigs before `today`, most recent first. A gig whose publishdate
+ * never arrived before it was played stays hidden here too.
+ */
+export function toPastGigs(catalog: GigCatalogEntry[], today: string): Gig[] {
+  return catalog
+    .filter((entry) => entry.date < today && isPublished(entry, today))
+    .sort((a, b) => byDateAsc(b, a))
+    .map((entry) => toGig(entry, today));
 }
 
 /**
  * Whether `/go/biljett/<id>` may redirect to this gig's vendor today.
- * Deliberately ignores `date`: the old SQL did too, and the catalog already
- * only holds gigs from yesterday on.
+ * Deliberately ignores `date`, as the old SQL did: a ticket link shared
+ * before a show keeps working after it.
  */
 export function isTicketLinkLive(entry: GigCatalogEntry, today: string): boolean {
   return (

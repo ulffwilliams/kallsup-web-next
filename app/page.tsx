@@ -8,7 +8,7 @@ import Releases from "./_components/Releases";
 import Merch from "./_components/Merch";
 import Video from "./_components/Video";
 import Contact from "./_components/Contact";
-import { getUpcomingGigs } from "./_lib/gigs";
+import { getGigs } from "./_lib/gigs";
 
 /* Regenerates every 5 minutes so publishdate/ticketreleasedate flip within
    5 minutes of Stockholm midnight. Regeneration reads the cached gig catalog,
@@ -16,7 +16,7 @@ import { getUpcomingGigs } from "./_lib/gigs";
 export const revalidate = 300;
 
 export default async function Home() {
-  const upcoming = await getUpcomingGigs();
+  const { upcoming, past } = await getGigs();
 
   return (
     <div id="top" className="relative isolate w-full">
@@ -26,7 +26,7 @@ export default async function Home() {
       <main id="main" className="relative z-10">
         <Hero />
         <SectionSeam />
-        <GigList upcoming={upcoming} />
+        <GigList upcoming={upcoming} past={past} />
         <Merch />
         <Releases />
         <Video />

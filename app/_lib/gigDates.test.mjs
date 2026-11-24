@@ -6,7 +6,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { isTicketLinkLive, stockholmToday, toUpcomingGigs } from "./gigDates.ts";
+import {
+  isTicketLinkLive,
+  stockholmToday,
+  toPastGigs,
+  toUpcomingGigs,
+} from "./gigDates.ts";
 
 function entry(overrides = {}) {
   return {
@@ -144,4 +149,48 @@ test("isTicketLinkLive: needs both gates — published but not released is false
 
 test("isTicketLinkLive: ignores the gig date (matches the old SQL)", () => {
   assert.equal(isTicketLinkLive(entry({ date: "2026-11-23" }), "2026-11-24"), true);
+});
+
+test("toPastGigs: keeps gigs before today, drops today and later", () => {
+  const result = toPastGigs(
+    [
+      entry({ id: 1, date: "2026-11-23" }),
+      entry({ id: 2, date: "2026-11-24" }),
+      entry({ id: 3, date: "2026-11-25" }),
+    ],
+    "2026-11-24",
+  );
+  assert.deepEqual(result.map((g) => g.id), [1]);
+});
+
+test("toPastGigs: newest first, then id descending", () => {
+  const result = toPastGigs(
+    [
+      entry({ id: 1, date: "2026-10-01" }),
+      entry({ id: 2, date: "2026-11-01" }),
+      entry({ id: 3, date: "2026-11-01" }),
+    ],
+    "2026-11-24",
+  );
+  assert.deepEqual(result.map((g) => g.id), [3, 2, 1]);
+});
+
+test("toPastGigs: a gig never published stays hidden after its date", () => {
+  const catalog = [entry({ date: "2026-11-01", publishdate: "2026-12-01" })];
+  assert.equal(toPastGigs(catalog, "2026-11-24").length, 0);
+});
+
+test("toPastGigs: returns the Gig shape", () => {
+  const [gig] = toPastGigs([entry({ date: "2026-11-01" })], "2026-11-24");
+  assert.deepEqual(Object.keys(gig).sort(), [
+    "date",
+    "id",
+    "location",
+    "note",
+    "soldout",
+    "ticketlink",
+    "ticketreleasedate",
+    "ticketsreleased",
+    "venue",
+  ]);
 });

@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache";
 import { db } from "./db";
 import {
   stockholmToday,
+  toPastGigs,
   toUpcomingGigs,
   type Gig,
   type GigCatalogEntry,
@@ -24,11 +25,8 @@ export const GIGS_TAG = "gigs";
  * regeneration. Midnight flips still land within the page's 5-minute window
  * with no query at all. See docs/gig-cache.md.
  *
- * `date >= today - 1` rather than `>= today`: the page does not need the
- * margin (the JS filter drops past gigs), but `/go/biljett` does — the old
- * ticket-link SQL ignored the gig date, so a link shared on the night of a
- * show keeps redirecting through the following day instead of bouncing to
- * /#live at midnight.
+ * Every row, past ones included: the page lists earlier shows too, and the
+ * table is a few dozen rows, so one unfiltered query beats a second one.
  *
  * DATE columns go through to_char(...): the serverless driver would otherwise
  * parse them into a JS Date at local midnight, which serialises as the
@@ -49,7 +47,6 @@ export const getGigCatalog = unstable_cache(
          to_char(ticketreleasedate, 'YYYY-MM-DD') AS ticketreleasedate,
          soldout
        FROM events
-       WHERE date >= (now() AT TIME ZONE 'Europe/Stockholm')::date - 1
        ORDER BY date ASC`,
     );
     return rows as GigCatalogEntry[];
@@ -58,8 +55,14 @@ export const getGigCatalog = unstable_cache(
   { revalidate: 3600, tags: [GIGS_TAG] },
 );
 
-export async function getUpcomingGigs(): Promise<Gig[]> {
-  return toUpcomingGigs(await getGigCatalog(), stockholmToday());
+/** Upcoming and past gigs from one catalog read, split at Stockholm's today. */
+export async function getGigs(): Promise<{ upcoming: Gig[]; past: Gig[] }> {
+  const catalog = await getGigCatalog();
+  const today = stockholmToday();
+  return {
+    upcoming: toUpcomingGigs(catalog, today),
+    past: toPastGigs(catalog, today),
+  };
 }
 
 const MONTHS_SV = [

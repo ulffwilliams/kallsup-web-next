@@ -20,8 +20,8 @@ export function isBot(userAgent: string | null) {
 }
 
 /**
- * Resolves a gig's ticket URL. Returns null when the gig is unknown (or past),
- * has no link yet, is not published yet, or is not on sale — the route sends
+ * Resolves a gig's ticket URL. Returns null when the gig is unknown, has no
+ * link yet, is not published yet, or is not on sale — the route sends
  * those back to the site rather than to a dead vendor page.
  *
  * Reads the cached gig catalog, not the database, so a click only wakes Neon
