@@ -28,6 +28,10 @@ refresh.
 
     node -e "console.log(require('crypto').randomBytes(24).toString('base64url'))"
 
+Keep the URL out of chats: link-preview bots fetch it, and each fetch is a
+refresh. If it leaks, rotate `REVALIDATE_SECRET` in Vercel and redeploy —
+someone hitting it in a loop would keep the Neon compute awake again.
+
 ## What still wakes the database
 
 - A ticket click (`INSERT INTO ticket_clicks`).

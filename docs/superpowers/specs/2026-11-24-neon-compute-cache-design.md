@@ -1,7 +1,7 @@
 # Neon compute: cache gig reads, resolve dates in JS
 
 Date: 2026-11-24
-Status: approved design, awaiting spec review
+Status: implemented (branch neon-compute-cache)
 
 ## Problem
 

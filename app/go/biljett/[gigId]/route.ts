@@ -3,8 +3,9 @@ import { after, type NextRequest } from "next/server";
 import { getTicketLink, isBot, recordClick } from "../../../_lib/ticketClicks";
 
 /*
- * Reads headers and the database on every request; there is nothing here to
- * cache and a cached redirect would count one click for everybody.
+ * Reads headers and records the click on every request; a cached redirect
+ * would count one click for everybody. The ticket link itself comes from the
+ * cached gig catalog, so only the click INSERT touches the database.
  */
 export const dynamic = "force-dynamic";
 
