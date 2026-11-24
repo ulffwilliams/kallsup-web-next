@@ -15,16 +15,13 @@ function Releases() {
   return (
     <section id="musik" className="section-y scroll-mt-24">
       <div className="shell">
-        <SectionHeader
-          title="Musik"
-          mirrored
-        />
+        <SectionHeader title="Musik" mirrored />
 
         {featured && (
           <Reveal className="grid items-center gap-8 md:grid-cols-[1fr_minmax(0,26rem)] md:gap-14">
             <div className="order-2 md:order-1 md:text-right">
               <p className="type-label mb-4">
-                {featured.year} · {featured.format}
+                {featured.format}, {featured.year}
               </p>
               <h3 className="type-huge mb-6 text-kall-cream">
                 {featured.title}
@@ -86,7 +83,11 @@ function Releases() {
           <Reveal className="mt-16">
             <ul dir="rtl" className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {rest.map((release) => (
-                <li key={release.slug} dir="ltr" className="group md:text-right">
+                <li
+                  key={release.slug}
+                  dir="ltr"
+                  className="group md:text-right"
+                >
                   <a
                     href={release.bandcamp ?? release.spotify ?? "#musik"}
                     target={
@@ -109,7 +110,7 @@ function Releases() {
                       {release.title}
                     </p>
                     <p className="type-label mt-1">
-                      {release.year} · {release.format}
+                      {release.format}, {release.year}
                     </p>
                   </a>
                 </li>

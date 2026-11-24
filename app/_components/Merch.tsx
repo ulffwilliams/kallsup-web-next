@@ -31,7 +31,7 @@ function Merch() {
                     <div className="relative aspect-square w-full overflow-hidden bg-kall-900/40">
                       <Image
                         src={item.image}
-                        alt={`${item.name} — ${item.variant ?? "merch"}`}
+                        alt={`${item.name} - ${item.variant ?? "merch"}`}
                         fill
                         sizes={IMAGE_SIZES}
                         /* Stays fully opaque. Cross-dissolving both shots at
@@ -66,7 +66,7 @@ function Merch() {
                   <p className="type-label mt-1 flex items-center gap-2">
                     {item.price ?? item.variant ?? "Bandcamp"}
                     <span className="text-kall-500 transition-transform duration-200 group-hover:translate-x-1">
-                      →
+                      
                     </span>
                   </p>
                 </a>
