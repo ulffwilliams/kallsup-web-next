@@ -14,14 +14,15 @@
 /** One row of the cached catalog (`getGigCatalog`). */
 export type GigCatalogEntry = {
   id: number;
+  /** "YYYY-MM-DD" — the loader must to_char() it; comparisons below are string compares. */
   date: string;
   location: string;
   venue: string;
   note: string | null;
   ticketlink: string | null;
-  /** Gig hidden until this Stockholm day. null = visible immediately. */
+  /** "YYYY-MM-DD". Gig hidden until this Stockholm day. null = visible immediately. */
   publishdate: string | null;
-  /** Ticket link held back until this Stockholm day. null = on sale. */
+  /** "YYYY-MM-DD". Ticket link held back until this Stockholm day. null = on sale. */
   ticketreleasedate: string | null;
   soldout: boolean;
 };
@@ -92,7 +93,11 @@ export function toUpcomingGigs(catalog: GigCatalogEntry[], today: string): Gig[]
     }));
 }
 
-/** Whether `/go/biljett/<id>` may redirect to this gig's vendor today. */
+/**
+ * Whether `/go/biljett/<id>` may redirect to this gig's vendor today.
+ * Deliberately ignores `date`: the old SQL did too, and the catalog already
+ * only holds gigs from yesterday on.
+ */
 export function isTicketLinkLive(entry: GigCatalogEntry, today: string): boolean {
   return (
     entry.ticketlink !== null &&

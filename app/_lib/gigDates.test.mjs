@@ -108,3 +108,40 @@ test("isTicketLinkLive: false before ticketreleasedate, true on it", () => {
   assert.equal(isTicketLinkLive(e, "2026-11-24"), false);
   assert.equal(isTicketLinkLive(e, "2026-11-25"), true);
 });
+
+test("stockholmToday: spring DST switch day (2026-03-29), 22:00 UTC is next day", () => {
+  // After 01:00 UTC on 2026-03-29 Stockholm is UTC+2.
+  assert.equal(stockholmToday(new Date("2026-03-29T21:59:00Z")), "2026-03-29");
+  assert.equal(stockholmToday(new Date("2026-03-29T22:00:00Z")), "2026-03-30");
+});
+
+test("stockholmToday: fall DST switch day (2026-10-25), 23:00 UTC is next day", () => {
+  // After 01:00 UTC on 2026-10-25 Stockholm is UTC+1.
+  assert.equal(stockholmToday(new Date("2026-10-25T22:59:00Z")), "2026-10-25");
+  assert.equal(stockholmToday(new Date("2026-10-25T23:00:00Z")), "2026-10-26");
+});
+
+test("toUpcomingGigs: past and unpublished is dropped", () => {
+  const catalog = [entry({ date: "2026-11-01", publishdate: "2026-12-01" })];
+  assert.equal(toUpcomingGigs(catalog, "2026-11-24").length, 0);
+});
+
+test("toUpcomingGigs: does not mutate its input", () => {
+  const catalog = [entry({ id: 2, date: "2026-12-05" }), entry({ id: 1, date: "2026-12-01" })];
+  toUpcomingGigs(catalog, "2026-11-24");
+  assert.deepEqual(catalog.map((e) => e.id), [2, 1]);
+});
+
+test("isTicketLinkLive: true with a link and both gates open", () => {
+  const e = entry({ publishdate: "2026-11-01", ticketreleasedate: "2026-11-10" });
+  assert.equal(isTicketLinkLive(e, "2026-11-24"), true);
+});
+
+test("isTicketLinkLive: needs both gates — published but not released is false", () => {
+  const e = entry({ publishdate: "2026-11-01", ticketreleasedate: "2026-12-01" });
+  assert.equal(isTicketLinkLive(e, "2026-11-24"), false);
+});
+
+test("isTicketLinkLive: ignores the gig date (matches the old SQL)", () => {
+  assert.equal(isTicketLinkLive(entry({ date: "2026-11-23" }), "2026-11-24"), true);
+});

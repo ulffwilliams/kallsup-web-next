@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test app/_lib/gigDates.test.mjs"
+    "test": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test app/_lib/gigDates.test.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
