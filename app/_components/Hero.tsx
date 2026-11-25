@@ -60,11 +60,26 @@ function Hero() {
               height={560}
               className="hero-logo-mark block h-auto w-full"
             />
-            <span className="hero-logo-layer hero-logo-split-r" aria-hidden="true" />
-            <span className="hero-logo-layer hero-logo-split-c" aria-hidden="true" />
-            <span className="hero-logo-layer hero-logo-slice" aria-hidden="true" />
-            <span className="hero-logo-layer hero-logo-noise" aria-hidden="true" />
-            <span className="hero-logo-layer hero-logo-scan" aria-hidden="true" />
+            <span
+              className="hero-logo-layer hero-logo-split-r"
+              aria-hidden="true"
+            />
+            <span
+              className="hero-logo-layer hero-logo-split-c"
+              aria-hidden="true"
+            />
+            <span
+              className="hero-logo-layer hero-logo-slice"
+              aria-hidden="true"
+            />
+            <span
+              className="hero-logo-layer hero-logo-noise"
+              aria-hidden="true"
+            />
+            <span
+              className="hero-logo-layer hero-logo-scan"
+              aria-hidden="true"
+            />
           </h1>
         </Parallax>
 
@@ -76,13 +91,17 @@ function Hero() {
           <a href="#musik" className="btn btn-solid">
             Alldeles för nära
           </a>
-          <a href="#live" className="btn uppercase">
+          <a href="#live" className="btn">
             Live
           </a>
         </Parallax>
       </div>
 
-      <Parallax as="p" speed={-0.03} className="type-label shell mt-14 opacity-70">
+      <Parallax
+        as="p"
+        speed={-0.03}
+        className="type-label shell mt-14 opacity-70"
+      >
         Foto: {site.photoCredit}
       </Parallax>
     </section>
